@@ -1,5 +1,4 @@
 ---
-layout: post
 author: kajetan
 date: 2020-07-19
 

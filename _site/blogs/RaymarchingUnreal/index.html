@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Raymarching in Unreal Engine 4</title>
+
+  <link rel="stylesheet" href= /assets/css/styles.css>
+</head>
+<body>
+
+  <div class="container">
+
+  <nav class="nav-header">
+  
+    <a href="/" >
+      Home
+    </a>
+  
+    <a href="/about" >
+      About
+    </a>
+  
+    <a href="/blog" >
+      Blog
+    </a>
+  
+    <a href="/portfolio" >
+      Portfolio
+    </a>
+  
+    <a href="/contact" >
+      Contact
+    </a>
+  
+  </nav>
+
+  <div class="content">
+    <h1>Raymarching in Unreal Engine 4</h1>
+<p>
+  20 Jul 2020
+  <hr>
+</p>
+
+<iframe width="420" height="315" src="http://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen=""></iframe>
+
+<p>An Image:
+<img src="/assets/imgs/vent.jpg" alt="my vent" />
+Raymarching is a fascinating tool, useful for rendering a wide variety of effects. However, it is not particularly easy to use raymarching in Unreal, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. There is a node that allows you to enter custom HLSL code into though, which we will be taking advantage of.</p>
+
+<p>I am not going to explain raymarching in-depth, so if you want to learn more this VIDEO explains it well, and this ARTICLE offers some easy to understand shader examples.</p>
+
+<p>We will be placing our raymarching shader onto a cube, so that it can be placed and viewed in the scene. This method was adapted from this VIDEO, which uses method and implements it in Unity.</p>
+
+<p>To begin we will start writing our raymarching functions in a custom shader node. To be able to write functions in the custom node requires a bit of a hack, which results in some strange looking code, if you want an explanation of why you write it this way look HERE at this ARTICLE.</p>
+
+<p>We will write all our raymarching and signed-distance functions in global node that we can use later. First we will write the raymarch function which takes in the camera position and the view direction towards the current pixel and returns the distance to the current point from the camera.</p>
+
+<p>To start writing HLSL functions add the following to your custom node:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// this escapes from the current HLSL function and allows us to write our own functions</span>
+	<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+<span class="err">}</span>
+
+<span class="kt">float</span> <span class="nf">raymarch</span><span class="p">(</span> <span class="n">float3</span> <span class="n">camPos</span><span class="p">,</span> <span class="n">float3</span> <span class="n">rayDir</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// raymarching code goes here</span>
+
+<span class="c1">// note the lack of closing bracket</span>
+</code></pre></div></div>
+
+<p>Now we can actually write the raymarcher:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Parameters: Camera Position and Ray Direction</span>
+<span class="c1">// Output: Distance to closest surface along ray</span>
+<span class="kt">float</span> <span class="nf">raymarch</span><span class="p">(</span> <span class="n">float3</span> <span class="n">camPos</span><span class="p">,</span> <span class="n">float3</span> <span class="n">rayDir</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_STEPS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="n">float3</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">camPos</span> <span class="o">+</span> <span class="p">(</span> <span class="n">rayDir</span> <span class="o">*</span> <span class="n">depth</span> <span class="p">);</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span> <span class="p">);</span>
+        
+        <span class="n">depth</span> <span class="o">+=</span> <span class="n">dist</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">EPSILON</span> <span class="o">||</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">MAX_DIST</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">depth</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You can define <code class="language-plaintext highlighter-rouge">MAX_DIST</code>, <code class="language-plaintext highlighter-rouge">MAX_STEPS</code>, and <code class="language-plaintext highlighter-rouge">EPSILON</code> with:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define MAX_DIST 100.0
+#define MAX_STEPS 100
+#define EPSILON 0.0001
+</span>
+<span class="kt">float</span> <span class="nf">raymarch</span><span class="p">(</span> <span class="n">float3</span> <span class="n">camPos</span><span class="p">,</span> <span class="n">float3</span> <span class="n">rayDir</span> <span class="p">)</span> <span class="p">{</span>
+ 	<span class="p">...</span>
+    <span class="p">...</span>
+</code></pre></div></div>
+
+
+
+  </div>
+</div>
+</body>
+</html>

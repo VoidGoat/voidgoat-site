@@ -12,4 +12,4 @@ defaults:
       path: ""
       type: "blogs"
     values:
-      layout: "default"
+      layout: "post"
