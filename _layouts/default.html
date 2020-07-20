@@ -6,11 +6,16 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>{{page.title}}</title>
 
-  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href= {{ "assets/css/styles.css" | relative_url }}>
 </head>
 <body>
-  {% include navigation.html %}
-  {{ content }}
 
+  <div style="background-color: #eee; margin: 0; height:100%;">
+
+  {% include navigation.html %}
+  <div style="max-width: 980px; width:100%; margin: auto; background-color: white; height:auto; padding: 15px;">
+    {{ content }}
+  </div>
+</div>
 </body>
 </html>

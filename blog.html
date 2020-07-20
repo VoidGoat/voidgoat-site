@@ -6,7 +6,8 @@ permalink: /blog
 <h1>Latest Blog Posts</h1>
 
 <ul>
-  {% for blog in site.blogs %}
+  {% assign sortedBlogs = site.blogs | reverse %}
+  {% for blog in sortedBlogs %}
   <li>
     <h2><a href="{{ blog.url | relative_url }}"> {{ blog.title }}</a></h2>
     {{ blog.excerpt }}

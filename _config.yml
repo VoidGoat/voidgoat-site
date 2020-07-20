@@ -8,3 +8,8 @@ defaults:
       path: ""
     values:
       layout: "default"
+  - scope:
+      path: ""
+      type: "blogs"
+    values:
+      layout: "default"
