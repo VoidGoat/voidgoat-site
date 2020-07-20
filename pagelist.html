@@ -1,0 +1,14 @@
+---
+title: Pages
+---
+
+<h1>Pages!</h1>
+
+<ul>
+  {% for page in site.pages %}
+    <li>
+      <h2><a href="{{ page.url | relative_url }}">{{page.title}}</a></h2>
+      <p>{{ page.excerpt | mardownify }}</p>
+    </li>
+  {% endfor %}
+</ul>

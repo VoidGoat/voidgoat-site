@@ -1,12 +1,10 @@
+collections:
+  blogs:
+    output: true
+    permalink: /:collection/:path/
+
 defaults:
-  - scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"
   - scope:
       path: ""
     values:
       layout: "default"
-
-theme: jekyll-theme-cayman
