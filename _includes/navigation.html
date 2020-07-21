@@ -9,14 +9,44 @@
       {{item.name}}
     </a>
   {% endfor %}
-</div>
+<!-- </div>
 
 <div class="nav-logo" style="right:0;">
-  <a href="https://twitter.com/VoidGoatDev" class="fa fa-twitter"></a>
+  <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
   <!-- <a href="#" class="fa fa-youtube-play"></a>
   <a href="#" class="fa fa-reddit"></a> -->
-  </div>
+</div>
+
+<div class="hamburger" style="right:0;">
+  <div href="https://twitter.com/VoidGoatDev" onclick="toggleMenu()" class="fa fa-bars"></div>
+  <!-- <a href="#" class="fa fa-youtube-play"></a>
+  <a href="#" class="fa fa-reddit"></a> -->
+</div>
+
 
 </nav>
 
+
+
 <hr>
+
+<div id="side-menu">
+  {% for item in site.data.navigation %}
+    <a href="{{ item.link | relative_url }}" class="{% if page.url == item.link %} current {% endif%} ">
+      {{item.name}}
+    </a>
+  {% endfor %}
+
+</div>
+
+<script type="text/javascript">
+  function toggleMenu() {
+    var menu = document.getElementById('side-menu');
+    if ( menu.style.display == 'block' ) {
+      menu.style.display = 'none';
+    } else {
+      menu.style.display = 'block';
+    }
+  }
+
+</script>

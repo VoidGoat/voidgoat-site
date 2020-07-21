@@ -39,17 +39,59 @@
       Contact
     </a>
   
-</div>
+<!-- </div>
 
 <div class="nav-logo" style="right:0;">
-  <a href="https://twitter.com/VoidGoatDev" class="fa fa-twitter"></a>
+  <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
   <!-- <a href="#" class="fa fa-youtube-play"></a>
   <a href="#" class="fa fa-reddit"></a> -->
-  </div>
+</div>
+
+<div class="hamburger" style="right:0;">
+  <div href="https://twitter.com/VoidGoatDev" onclick="toggleMenu()" class="fa fa-bars"></div>
+  <!-- <a href="#" class="fa fa-youtube-play"></a>
+  <a href="#" class="fa fa-reddit"></a> -->
+</div>
+
 
 </nav>
 
+
+
 <hr>
+
+<div id="side-menu">
+  
+    <a href="/about" class=" ">
+      About
+    </a>
+  
+    <a href="/blog" class=" ">
+      Blog
+    </a>
+  
+    <a href="/portfolio" class=" current  ">
+      Portfolio
+    </a>
+  
+    <a href="/contact" class=" ">
+      Contact
+    </a>
+  
+
+</div>
+
+<script type="text/javascript">
+  function toggleMenu() {
+    var menu = document.getElementById('side-menu');
+    if ( menu.style.display == 'block' ) {
+      menu.style.display = 'none';
+    } else {
+      menu.style.display = 'block';
+    }
+  }
+
+</script>
 
   <div class="content">
     I have not made this page yet, and therefore it is blank.
