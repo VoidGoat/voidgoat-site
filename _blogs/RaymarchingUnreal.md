@@ -2,11 +2,6 @@
 title: Raymarching in Unreal Engine 4
 date: 2020-07-20
 ---
-
-<iframe width="420" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
-
-An Image:
-![my vent](/assets/imgs/vent.jpg)
 Raymarching is a fascinating tool, useful for rendering a wide variety of effects. However, it is not particularly easy to use raymarching in Unreal, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. There is a node that allows you to enter custom HLSL code into though, which we will be taking advantage of.
 
 I am not going to explain raymarching in-depth, so if you want to learn more this VIDEO explains it well, and this ARTICLE offers some easy to understand shader examples.
