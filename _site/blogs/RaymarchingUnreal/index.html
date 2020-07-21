@@ -43,7 +43,7 @@
   <hr>
 </p>
 
-<iframe width="420" height="315" src="http://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen=""></iframe>
+<iframe width="420" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen=""></iframe>
 
 <p>An Image:
 <img src="/assets/imgs/vent.jpg" alt="my vent" />
@@ -79,7 +79,7 @@ Raymarching is a fascinating tool, useful for rendering a wide variety of effect
     <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_STEPS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
         <span class="n">float3</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">camPos</span> <span class="o">+</span> <span class="p">(</span> <span class="n">rayDir</span> <span class="o">*</span> <span class="n">depth</span> <span class="p">);</span>
         <span class="n">dist</span> <span class="o">=</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span> <span class="p">);</span>
-        
+
         <span class="n">depth</span> <span class="o">+=</span> <span class="n">dist</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">EPSILON</span> <span class="o">||</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">MAX_DIST</span> <span class="p">)</span> <span class="p">{</span>
             <span class="k">break</span><span class="p">;</span>
@@ -99,7 +99,6 @@ Raymarching is a fascinating tool, useful for rendering a wide variety of effect
  	<span class="p">...</span>
     <span class="p">...</span>
 </code></pre></div></div>
-
 
 
   </div>

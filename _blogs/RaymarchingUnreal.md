@@ -3,7 +3,7 @@ title: Raymarching in Unreal Engine 4
 date: 2020-07-20
 ---
 
-<iframe width="420" height="315" src="http://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
+<iframe width="420" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allowfullscreen></iframe>
 
 An Image:
 ![my vent](/assets/imgs/vent.jpg)
@@ -43,7 +43,7 @@ float raymarch( float3 camPos, float3 rayDir ) {
     for ( int i = 0; i < MAX_STEPS; i++ ) {
         float3 pos = camPos + ( rayDir * depth );
         dist = sceneSDF( pos );
-        
+
         depth += dist;
         if ( dist <= EPSILON || depth > MAX_DIST ) {
             break;
@@ -64,4 +64,3 @@ float raymarch( float3 camPos, float3 rayDir ) {
  	...
     ...
 ```
-
