@@ -20,18 +20,24 @@ body { margin: 0; height: inherit; font-family: 'Mulish', sans-serif; font-weigh
 
 .hamburger { font-size: 30px !important; width: 30px; position: fixed; top: 20px; margin-right: 20px; cursor: pointer; z-index: 3; display: none; }
 
-#side-menu { display: none; position: fixed; background: #dadada; top: 0; bottom: 0; right: 0; max-width: 500px; z-index: 2; width: 100%; padding-top: 40px; }
+#side-menu { position: fixed; background: white; top: 0; bottom: 0; right: -500px; max-width: 500px; z-index: 2; width: 100%; padding-top: 40px; }
 
 #side-menu a { display: block; color: #333333; font-size: 30px; font-weight: bold; margin: 4px 20px 0px 40px; text-decoration: none; padding-bottom: 5px; }
+
+@keyframes slide-in { from { right: -500px; }
+  to { right: 0; } }
+.slide-in { animation-name: slide-in; animation-duration: 0.5s; animation-iteration-count: 1; right: 0 !important; }
+
+.slide-out { animation-name: slide-in; animation-direction: reverse; animation-duration: 0.5s; animation-iteration-count: 1; right: -500px !important; }
 
 @media only screen and (max-width: 900px) { .nav-center { display: none; }
   .socials { display: none; }
   .hamburger { display: block; } }
-.blog-link-full { color: #333333; display: flex; border: 1px solid #d8d8d8; overflow: hidden; max-height: 300px; margin-bottom: 30px; border-radius: 10px; position: relative; }
+.blog-link-full { color: #333333; border: 1px solid #d8d8d8; overflow: hidden; flex-wrap: wrap; max-height: 300px; margin-bottom: 30px; border-radius: 10px; position: relative; }
 
-.blog-link-full img { display: block; width: 40%; max-width: 400px; }
+.blog-link-full img { display: inline-block; float: left; width: 40%; height: auto; }
 
-.blog-link-full p, h2 { margin: 20px; width: auto; }
+.blog-link-full p, h2 { display: inline-block; }
 
 .corner-button { position: absolute; bottom: 20px; right: 20px; }
 

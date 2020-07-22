@@ -40,12 +40,36 @@
 </div>
 
 <script type="text/javascript">
+  var menuVisible = false;
+
   function toggleMenu() {
     var menu = document.getElementById('side-menu');
-    if ( menu.style.display == 'block' ) {
-      menu.style.display = 'none';
+    if ( menuVisible ) {
+      <!-- menu.style.display = 'none'; -->
+      menu.classList.remove("slide-in");
+      menu.classList.remove("slide-out");
+
+      void menu.offsetWidth;
+
+      menu.classList.add("slide-out");
+      menu.style.animationPlayState = 'running';
+      
+      <!-- menu.style.right = '-500px'; -->
+      menuVisible = false;
     } else {
-      menu.style.display = 'block';
+
+      <!-- menu.style.display = 'block'; -->
+      menu.classList.remove("slide-in");
+      menu.classList.remove("slide-out");
+
+      void menu.offsetWidth;
+
+      menu.classList.add("slide-in");
+      menu.style.animationPlayState = 'running';
+
+      <!-- menu.style.right = '0'; -->
+
+      menuVisible = true;
     }
   }
 

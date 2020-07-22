@@ -21,8 +21,8 @@ permalink: /blog
   <a href=" {{blog.url | relative_url }}" style="display: block; text-decoration:none;">
     <article class="blog-link-full"  >
       <img src="{{ "assets/imgs/raymarch/thumbnail.png" | relative_url }}" alt="">
-      <div style="width: 60%;" >
-        <h2>{{blog.title }}</h2>
+      <div style="display: inline-block; width: 45%">
+        <h2>{{blog.title}}</h2>
         <hr>
         <div class="markdown-body" >{{blog.excerpt}}</div>
       </div>

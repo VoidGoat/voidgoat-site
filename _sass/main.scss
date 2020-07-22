@@ -103,13 +103,15 @@ body {
   display: none;
 }
 #side-menu {
-  display: none;
+  // display: none;
 
   position: fixed;
-  background: rgb(218, 218, 218);
+  background: white;
+  // box-shadow: 1px
+  // background: rgb(218, 218, 218);
   top: 0;
   bottom: 0;
-  right: 0;
+  right: -500px;
   // left: 50%;
   // lef
   max-width: 500px;
@@ -132,6 +134,27 @@ body {
   padding-bottom: 5px;
 }
 
+@keyframes slide-in {
+  from {right: -500px;}
+  to {right: 0;}
+}
+
+.slide-in {
+  animation-name: slide-in;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+
+  right: 0 !important;
+}
+.slide-out {
+  animation-name: slide-in;
+  animation-direction: reverse;
+  animation-duration: 0.5s;
+  animation-iteration-count: 1;
+
+  right: -500px !important;
+}
+
 @media only screen and (max-width: 900px) {
   .nav-center {
     display: none;
@@ -139,9 +162,14 @@ body {
   .socials {
     display: none;
   }
-
   .hamburger {
     display: block;
+  }
+  #side-menu {
+    // display: block;
+    // right: 0;
+    // animation-play-state: paused;
+    // animation-name: none;
   }
 }
 // @media only screen and (min-width: 900px) {
@@ -159,9 +187,10 @@ body {
 
 .blog-link-full {
   color: rgb(51, 51, 51);
-  display: flex;
+  // display: flex;
   border: 1px solid #d8d8d8;
   overflow: hidden;
+  flex-wrap: wrap;
 
   max-height: 300px;
   margin-bottom: 30px;
@@ -173,16 +202,29 @@ body {
 }
 
 .blog-link-full img {
-  display: block;
+  // object-fit: fill;
+  display: inline-block;
+  float: left;
   width: 40%;
-  max-width: 400px;
+  // max-width: 400px;
+  height: auto;
 }
 
+
 .blog-link-full p, h2 {
-  margin: 20px;
+  display: inline-block;
+  // margin: 20px;
   // color: blue;
-  width: auto;
+  // width: auto;
 }
+//
+// .blog-link-full div {
+//   // width: 50%;
+//   height: auto;
+//   display: inline-block;
+//
+// }
+
 
 .corner-button {
   position: absolute;

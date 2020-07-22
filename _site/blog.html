@@ -82,12 +82,36 @@
 </div>
 
 <script type="text/javascript">
+  var menuVisible = false;
+
   function toggleMenu() {
     var menu = document.getElementById('side-menu');
-    if ( menu.style.display == 'block' ) {
-      menu.style.display = 'none';
+    if ( menuVisible ) {
+      <!-- menu.style.display = 'none'; -->
+      menu.classList.remove("slide-in");
+      menu.classList.remove("slide-out");
+
+      void menu.offsetWidth;
+
+      menu.classList.add("slide-out");
+      menu.style.animationPlayState = 'running';
+      
+      <!-- menu.style.right = '-500px'; -->
+      menuVisible = false;
     } else {
-      menu.style.display = 'block';
+
+      <!-- menu.style.display = 'block'; -->
+      menu.classList.remove("slide-in");
+      menu.classList.remove("slide-out");
+
+      void menu.offsetWidth;
+
+      menu.classList.add("slide-in");
+      menu.style.animationPlayState = 'running';
+
+      <!-- menu.style.right = '0'; -->
+
+      menuVisible = true;
     }
   }
 
@@ -127,7 +151,7 @@
   <a href=" /blogs/raymarching/" style="display: block; text-decoration:none;">
     <article class="blog-link-full"  >
       <img src="/assets/imgs/raymarch/thumbnail.png" alt="">
-      <div style="width: 60%;" >
+      <div style="display: inline-block; width: 45%">
         <h2>Raymarching in Unreal!</h2>
         <hr>
         <div class="markdown-body" ><p>This is my first POST <em>woo hoo</em></p>
@@ -141,7 +165,7 @@
   <a href=" /blogs/RaymarchingUnreal/" style="display: block; text-decoration:none;">
     <article class="blog-link-full"  >
       <img src="/assets/imgs/raymarch/thumbnail.png" alt="">
-      <div style="width: 60%;" >
+      <div style="display: inline-block; width: 45%">
         <h2>Raymarching in Unreal Engine 4</h2>
         <hr>
         <div class="markdown-body" ><p>Raymarching is a fascinating tool, useful for rendering a wide variety of effects. However, it is not particularly easy to use raymarching in Unreal, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. There is a node that allows you to enter custom HLSL code into though, which we will be taking advantage of.</p>
@@ -155,7 +179,7 @@
   <a href=" /blogs/first-post/" style="display: block; text-decoration:none;">
     <article class="blog-link-full"  >
       <img src="/assets/imgs/raymarch/thumbnail.png" alt="">
-      <div style="width: 60%;" >
+      <div style="display: inline-block; width: 45%">
         <h2>First Post</h2>
         <hr>
         <div class="markdown-body" ><p>This is my first POST <em>woo hoo</em></p>
