@@ -47,8 +47,8 @@
   <a href="#" class="fa fa-reddit"></a> -->
 </div>
 
-<div class="hamburger" style="right:0;">
-  <div href="https://twitter.com/VoidGoatDev" onclick="toggleMenu()" class="fa fa-bars"></div>
+<div id="hamburger" style="right:0;">
+  <div id="hamburger-icon" href="https://twitter.com/VoidGoatDev" onclick="toggleMenu()" class="fa fa-bars"></div>
   <!-- <a href="#" class="fa fa-youtube-play"></a>
   <a href="#" class="fa fa-reddit"></a> -->
 </div>
@@ -86,8 +86,8 @@
 
   function toggleMenu() {
     var menu = document.getElementById('side-menu');
+    var hamburger = document.getElementById("hamburger-icon");
     if ( menuVisible ) {
-      <!-- menu.style.display = 'none'; -->
       menu.classList.remove("slide-in");
       menu.classList.remove("slide-out");
 
@@ -95,12 +95,14 @@
 
       menu.classList.add("slide-out");
       menu.style.animationPlayState = 'running';
-      
-      <!-- menu.style.right = '-500px'; -->
+
+
+      hamburger.classList.add("fa-bars");
+      hamburger.classList.remove("fa-close");
+
       menuVisible = false;
     } else {
 
-      <!-- menu.style.display = 'block'; -->
       menu.classList.remove("slide-in");
       menu.classList.remove("slide-out");
 
@@ -109,7 +111,8 @@
       menu.classList.add("slide-in");
       menu.style.animationPlayState = 'running';
 
-      <!-- menu.style.right = '0'; -->
+      hamburger.classList.remove("fa-bars");
+      hamburger.classList.add("fa-times");
 
       menuVisible = true;
     }

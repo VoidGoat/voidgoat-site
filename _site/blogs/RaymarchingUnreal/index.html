@@ -47,8 +47,8 @@
   <a href="#" class="fa fa-reddit"></a> -->
 </div>
 
-<div class="hamburger" style="right:0;">
-  <div href="https://twitter.com/VoidGoatDev" onclick="toggleMenu()" class="fa fa-bars"></div>
+<div id="hamburger" style="right:0;">
+  <div id="hamburger-icon" href="https://twitter.com/VoidGoatDev" onclick="toggleMenu()" class="fa fa-bars"></div>
   <!-- <a href="#" class="fa fa-youtube-play"></a>
   <a href="#" class="fa fa-reddit"></a> -->
 </div>
@@ -86,8 +86,8 @@
 
   function toggleMenu() {
     var menu = document.getElementById('side-menu');
+    var hamburger = document.getElementById("hamburger-icon");
     if ( menuVisible ) {
-      <!-- menu.style.display = 'none'; -->
       menu.classList.remove("slide-in");
       menu.classList.remove("slide-out");
 
@@ -95,12 +95,14 @@
 
       menu.classList.add("slide-out");
       menu.style.animationPlayState = 'running';
-      
-      <!-- menu.style.right = '-500px'; -->
+
+
+      hamburger.classList.add("fa-bars");
+      hamburger.classList.remove("fa-close");
+
       menuVisible = false;
     } else {
 
-      <!-- menu.style.display = 'block'; -->
       menu.classList.remove("slide-in");
       menu.classList.remove("slide-out");
 
@@ -109,7 +111,8 @@
       menu.classList.add("slide-in");
       menu.style.animationPlayState = 'running';
 
-      <!-- menu.style.right = '0'; -->
+      hamburger.classList.remove("fa-bars");
+      hamburger.classList.add("fa-times");
 
       menuVisible = true;
     }
@@ -119,17 +122,22 @@
 
   <div class="content">
     <h1>Raymarching in Unreal Engine 4</h1>
+
+
+<img src="/assets/imgs/RaymarchingUnreal/header.png" alt=" header">
+
 <p>
   20 Jul 2020
+
   <hr>
 </p>
 <div class="markdown-body">
 
-<p>Raymarching is a fascinating tool, useful for rendering a wide variety of effects. However, it is not particularly easy to use raymarching in Unreal, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. There is a node that allows you to enter custom HLSL code into though, which we will be taking advantage of.</p>
+<p>Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. There is a node that allows you to enter custom HLSL code into though, which we will be taking advantage of.</p>
 
 <p>I am not going to explain raymarching in-depth, so if you want to learn more this VIDEO explains it well, and this ARTICLE offers some easy to understand shader examples.</p>
 
-<p>We will be placing our raymarching shader onto a cube, so that it can be placed and viewed in the scene. This method was adapted from this VIDEO, which uses method and implements it in Unity.</p>
+<p>We will be placing our raymarching shader onto a cube, so that it can be placed and viewed in the scene. This method was adapted from this VIDEO, which uses the same method and implements it in Unity.</p>
 
 <p>To begin we will start writing our raymarching functions in a custom shader node. To be able to write functions in the custom node requires a bit of a hack, which results in some strange looking code, if you want an explanation of why you write it this way look HERE at this ARTICLE.</p>
 
@@ -155,10 +163,14 @@
     <span class="kt">float</span> <span class="n">depth</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
 
     <span class="k">for</span> <span class="p">(</span> <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAX_STEPS</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+      	<span class="c1">// Calculate next position along view ray</span>
         <span class="n">float3</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">camPos</span> <span class="o">+</span> <span class="p">(</span> <span class="n">rayDir</span> <span class="o">*</span> <span class="n">depth</span> <span class="p">);</span>
+
+        <span class="c1">// Calcualte shortest distance to scene at position</span>
         <span class="n">dist</span> <span class="o">=</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span> <span class="p">);</span>
 
         <span class="n">depth</span> <span class="o">+=</span> <span class="n">dist</span><span class="p">;</span>
+      	<span class="c1">// finish when very close to a surface or when ray has travelled to far</span>
         <span class="k">if</span> <span class="p">(</span> <span class="n">dist</span> <span class="o">&lt;=</span> <span class="n">EPSILON</span> <span class="o">||</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">MAX_DIST</span> <span class="p">)</span> <span class="p">{</span>
             <span class="k">break</span><span class="p">;</span>
         <span class="p">}</span>
@@ -175,7 +187,68 @@
 </span>
 <span class="kt">float</span> <span class="nf">raymarch</span><span class="p">(</span> <span class="n">float3</span> <span class="n">camPos</span><span class="p">,</span> <span class="n">float3</span> <span class="n">rayDir</span> <span class="p">)</span> <span class="p">{</span>
  	<span class="p">...</span>
-    <span class="p">...</span>
+  <span class="p">...</span>
+</code></pre></div></div>
+
+<p>Now we need a <code class="language-plaintext highlighter-rouge">sceneSDF</code> function, so that we can calculate the distance to the surface at any point. The simplest SDF is sphere, so we can use that to start</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">sceneSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">pos</span> <span class="p">)</span> <span class="p">{</span>
+ 	<span class="k">return</span> <span class="n">length</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">40</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">float</span> <span class="nf">raymarch</span><span class="p">(...)</span> <span class="p">{</span>
+  <span class="p">...</span>
+</code></pre></div></div>
+
+<p>Now we can finally render something, although it won’t look too impressive yet. First we need to add another custom HLSL node to the material graph, so that we can actually run the calculations.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">raymarch</span><span class="p">(</span> <span class="n">CameraPosition</span><span class="p">,</span> <span class="n">RayDirection</span> <span class="p">);</span>
+
+<span class="c1">// if no surface was hit then return black</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;=</span> <span class="n">MAX_STEPS</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">float4</span><span class="p">(</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// otherwise return white</span>
+<span class="k">return</span> <span class="nf">float4</span><span class="p">(</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
+</code></pre></div></div>
+
+<p>If you’ve done everything correctly so far you should see a white circle in the middle of any mesh that you apply the material to. The circle is actually a sphere, but it doesn’t have any shading, so it doesn’t look like much.</p>
+
+<h2 id="calculating-normals">Calculating Normals</h2>
+
+<p>To shade the sphere properly we need to get the normals of the sphere, we could do this mathematically, but a more robust method is to estimate them by sampling the SDF.</p>
+
+<p>Add the following function to the global custom node</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="nf">estimateNormals</span><span class="p">(</span><span class="n">vec3</span> <span class="n">pos</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span>
+  	<span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span> <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">),</span>
+    <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span> <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">),</span>
+    <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span> <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span>
+  <span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Now we can use this function to estimate the normal of a surface at any point. To use this we can add it to our final color calculation.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;=</span> <span class="n">MAX_STEPS</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="n">float4</span><span class="p">(</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// visualize the estimated normals</span>
+<span class="k">return</span> <span class="nf">calculateNormals</span><span class="p">(</span> <span class="n">CameraPosition</span> <span class="o">+</span> <span class="p">(</span><span class="n">RayDirection</span> <span class="o">*</span> <span class="n">depth</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn’t really look like a real object, since it has no lighting.</p>
+
+<h2 id="phong-shading">Phong Shading</h2>
+
+<p>We are going to use Phong shading, since it is fairly simple to implement. Now that we have the surface normals we can use them to calculate how much light would hit each part of the surface. We are going to implement a simple directional light, but you could add point or spot lights with the same method.</p>
+
+<p>First we need a direction vector for our light</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="n">lightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span> <span class="p">));</span>
 </code></pre></div></div>
 
 </div>

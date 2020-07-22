@@ -41,7 +41,7 @@ body {
   // text-align: center;
   // background-color: black;
   padding-top: 30px;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
 
   margin-bottom: 20px;
   // justify-content: space-between;
@@ -67,12 +67,7 @@ body {
 }
 
 
-.current {
-  color:  #2196f3 !important;
-  border-bottom: 4px solid #2196f3;
-  padding-bottom: 5px !important;
 
-}
 .nav-center {
   margin: 0 auto;
   // display: flex;s
@@ -89,8 +84,21 @@ body {
 
   padding-bottom: 5px;
 }
+.nav-center a:hover {
+  // color: rgb(51, 51, 51) !important;
+  // color:  #2196f3 !important;
+  border-bottom: 4px solid rgb(51, 51, 51) ;
+  padding-bottom: 5px !important;
 
-.hamburger {
+}
+
+.current {
+  color:  #2196f3 !important;
+  border-bottom: 4px solid #2196f3 !important;
+  padding-bottom: 5px !important;
+}
+
+#hamburger {
   font-size: 30px !important;
   width: 30px;
   position: fixed;
@@ -162,7 +170,7 @@ body {
   .socials {
     display: none;
   }
-  .hamburger {
+  #hamburger {
     display: block;
   }
   #side-menu {
@@ -188,42 +196,41 @@ body {
 .blog-link-full {
   color: rgb(51, 51, 51);
   // display: flex;
+  // flex-wrap: wrap;
+
+
   border: 1px solid #d8d8d8;
   overflow: hidden;
-  flex-wrap: wrap;
 
-  max-height: 300px;
-  margin-bottom: 30px;
+  // max-height: 300px;
+  width: 100%;
+
+  max-width: 490px;
+
+  margin-bottom: 10px;
 
   border-radius: 10px;
   position: relative;
+  // margin: auto;
   // box-shadow: ;
   // width: auto;
 }
 
 .blog-link-full img {
   // object-fit: fill;
-  display: inline-block;
-  float: left;
-  width: 40%;
-  // max-width: 400px;
-  height: auto;
+  // display: block;
+  // float: left;
+  // width: 100%;
+  // height: auto;
+}
+.blog-link-full section {
+  // display: block;
+   // width: 45%;
+  width: 100%;
+   height: 200px;
+   padding: 10px;
 }
 
-
-.blog-link-full p, h2 {
-  display: inline-block;
-  // margin: 20px;
-  // color: blue;
-  // width: auto;
-}
-//
-// .blog-link-full div {
-//   // width: 50%;
-//   height: auto;
-//   display: inline-block;
-//
-// }
 
 
 .corner-button {
@@ -238,6 +245,13 @@ body {
   padding: 10px;
   font-weight: bold;
   border-radius: 100px;
+
+  transition: background-color 0.2s;
+}
+
+.round-button:hover {
+  background-color: #a23613;
+
 }
 
 .highlight {
