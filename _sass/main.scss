@@ -43,7 +43,7 @@ body {
   padding-top: 30px;
   padding-bottom: 8px;
 
-  margin-bottom: 20px;
+  margin-bottom: 50px;
   // justify-content: space-between;
 }
 .nav-logo {
@@ -82,20 +82,20 @@ body {
   margin: 4px 20px 0px 40px;
   text-decoration: none;
 
-  padding-bottom: 5px;
+  // padding-bottom: 5px;
 }
 .nav-center a:hover {
   // color: rgb(51, 51, 51) !important;
   // color:  #2196f3 !important;
   border-bottom: 4px solid rgb(51, 51, 51) ;
-  padding-bottom: 5px !important;
+  // padding-bottom: 5px !important;
 
 }
 
 .current {
   color:  #2196f3 !important;
   border-bottom: 4px solid #2196f3 !important;
-  padding-bottom: 5px !important;
+  padding-bottom: 0 !important;
 }
 
 #hamburger {
@@ -115,11 +115,11 @@ body {
 
   position: fixed;
   background: white;
-  // box-shadow: 1px
+  box-shadow: -5px 0 5px rgb(186, 186, 186);
   // background: rgb(218, 218, 218);
   top: 0;
   bottom: 0;
-  right: -500px;
+  right: -505px;
   // left: 50%;
   // lef
   max-width: 500px;
@@ -139,11 +139,19 @@ body {
   margin: 4px 20px 0px 40px;
   text-decoration: none;
 
-  padding-bottom: 5px;
+  padding-bottom: 4px;
+}
+
+#side-menu a:hover {
+  // color: rgb(51, 51, 51) !important;
+  // color:  #2196f3 !important;
+  border-bottom: 4px solid rgb(51, 51, 51) ;
+  padding-bottom: 0 !important;
+
 }
 
 @keyframes slide-in {
-  from {right: -500px;}
+  from {right: -505px;}
   to {right: 0;}
 }
 
@@ -160,9 +168,16 @@ body {
   animation-duration: 0.5s;
   animation-iteration-count: 1;
 
-  right: -500px !important;
+  right: -505px !important;
 }
 
+.socials  a{
+  text-decoration: none;
+}
+
+.socials {
+  right: 10px;
+}
 @media only screen and (max-width: 900px) {
   .nav-center {
     display: none;
@@ -195,38 +210,37 @@ body {
 
 .blog-link-full {
   color: rgb(51, 51, 51);
-  // display: flex;
-  // flex-wrap: wrap;
-
+  text-decoration: none;
 
   border: 1px solid #d8d8d8;
+  // border-top: 1px solid #d8d8d8;
+  // border-bottom: 2px solid #d8d8d8;
+
   overflow: hidden;
 
-  // max-height: 300px;
   width: 100%;
 
-  max-width: 490px;
+  max-width: 450px;
 
-  margin-bottom: 10px;
+  margin: 5px;
 
   border-radius: 10px;
+
   position: relative;
-  // margin: auto;
-  // box-shadow: ;
-  // width: auto;
+
 }
 
 .blog-link-full img {
   // object-fit: fill;
   // display: block;
   // float: left;
-  // width: 100%;
-  // height: auto;
+  width: 100%;
+  max-height: 340px;
 }
 .blog-link-full section {
   // display: block;
    // width: 45%;
-  width: 100%;
+   width: auto;
    height: 200px;
    padding: 10px;
 }

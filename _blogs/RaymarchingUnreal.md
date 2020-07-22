@@ -117,7 +117,8 @@ if (depth >= MAX_STEPS) {
 }
 
 // visualize the estimated normals
-return calculateNormals( CameraPosition + (RayDirection * depth));
+float3 normal = calculateNormals( CameraPosition + (RayDirection * depth));
+return float4( normal, 1.0 );
 ```
 
 Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn't really look like a real object, since it has no lighting.
@@ -130,4 +131,11 @@ First we need a direction vector for our light
 
 ```c
 float3 lightDir = normalize( float3( -0.3, -1.0, -0.3 ));
+
+float spec = pow( clamp( dot( -lightDir, normal ), 0, 1 ) );
+
 ```
+
+
+## Final Result
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Experimenting with raymarching in <a href="https://twitter.com/hashtag/UnrealEngine?src=hash&amp;ref_src=twsrc%5Etfw">#UnrealEngine</a> <a href="https://twitter.com/hashtag/gamedev?src=hash&amp;ref_src=twsrc%5Etfw">#gamedev</a> <a href="https://twitter.com/hashtag/indiedev?src=hash&amp;ref_src=twsrc%5Etfw">#indiedev</a> <a href="https://twitter.com/hashtag/creativecoding?src=hash&amp;ref_src=twsrc%5Etfw">#creativecoding</a> <a href="https://t.co/DEzWVnZnzP">pic.twitter.com/DEzWVnZnzP</a></p>&mdash; Void Goat (@VoidGoatDev) <a href="https://twitter.com/VoidGoatDev/status/1284916634830942213?ref_src=twsrc%5Etfw">July 19, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

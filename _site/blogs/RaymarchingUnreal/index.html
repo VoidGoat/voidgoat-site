@@ -17,11 +17,14 @@
   <div class="container">
 
   <nav class="nav-header">
-  <!-- <a href="/" class="nav-logo">Homeaaaaaaaaaaaaaaaaaaaaaaaa</a> -->
+
+
   <a href= / class="nav-logo">
       Void Goat
     </a>
+
   <div class="nav-center">
+
   
     <a href="/about" class=" ">
       About
@@ -39,13 +42,17 @@
       Contact
     </a>
   
-<!-- </div>
+  </div>
 
-<div class="nav-logo" style="right:0;">
+
+
+<div class="nav-logo socials" >
   <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
-  <!-- <a href="#" class="fa fa-youtube-play"></a>
-  <a href="#" class="fa fa-reddit"></a> -->
+
+   <a href="https://www.youtube.com/channel/UChRfQHdCl297MMJ3ScObGeg" class="fa fa-youtube-play"></a>
+  <!-- <a href="#" class="fa fa-reddit"></a> -->
 </div>
+
 
 <div id="hamburger" style="right:0;">
   <div id="hamburger-icon" href="https://twitter.com/VoidGoatDev" onclick="toggleMenu()" class="fa fa-bars"></div>
@@ -55,10 +62,11 @@
 
 
 </nav>
+<!-- <br> -->
 
 
 
-<hr>
+<!-- <hr> -->
 
 <div id="side-menu">
   
@@ -237,7 +245,8 @@
 <span class="p">}</span>
 
 <span class="c1">// visualize the estimated normals</span>
-<span class="k">return</span> <span class="nf">calculateNormals</span><span class="p">(</span> <span class="n">CameraPosition</span> <span class="o">+</span> <span class="p">(</span><span class="n">RayDirection</span> <span class="o">*</span> <span class="n">depth</span><span class="p">));</span>
+<span class="n">float3</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">calculateNormals</span><span class="p">(</span> <span class="n">CameraPosition</span> <span class="o">+</span> <span class="p">(</span><span class="n">RayDirection</span> <span class="o">*</span> <span class="n">depth</span><span class="p">));</span>
+<span class="k">return</span> <span class="nf">float4</span><span class="p">(</span> <span class="n">normal</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
 </code></pre></div></div>
 
 <p>Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn’t really look like a real object, since it has no lighting.</p>
@@ -249,7 +258,15 @@
 <p>First we need a direction vector for our light</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="n">lightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span> <span class="p">));</span>
+
+<span class="kt">float</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">pow</span><span class="p">(</span> <span class="n">clamp</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span> <span class="o">-</span><span class="n">lightDir</span><span class="p">,</span> <span class="n">normal</span> <span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">);</span>
+
 </code></pre></div></div>
+
+<h2 id="final-result">Final Result</h2>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Experimenting with raymarching in <a href="https://twitter.com/hashtag/UnrealEngine?src=hash&amp;ref_src=twsrc%5Etfw">#UnrealEngine</a> <a href="https://twitter.com/hashtag/gamedev?src=hash&amp;ref_src=twsrc%5Etfw">#gamedev</a> <a href="https://twitter.com/hashtag/indiedev?src=hash&amp;ref_src=twsrc%5Etfw">#indiedev</a> <a href="https://twitter.com/hashtag/creativecoding?src=hash&amp;ref_src=twsrc%5Etfw">#creativecoding</a> <a href="https://t.co/DEzWVnZnzP">pic.twitter.com/DEzWVnZnzP</a></p>&mdash; Void Goat (@VoidGoatDev) <a href="https://twitter.com/VoidGoatDev/status/1284916634830942213?ref_src=twsrc%5Etfw">July 19, 2020</a></blockquote>
+<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 
 </div>
 
