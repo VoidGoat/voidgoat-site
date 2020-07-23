@@ -10,9 +10,17 @@ I am not going to explain raymarching in-depth, so if you want to learn more thi
 
 We will be placing our raymarching shader onto a cube, so that it can be placed and viewed in the scene. This method was adapted from this VIDEO, which uses the same method and implements it in Unity.
 
+First we need to create a material where we can write our raymarching code. You should set the material to be a Surface material that is Masked, Unlit, and Two Sided.
+
 To begin we will start writing our raymarching functions in a custom shader node. To be able to write functions in the custom node requires a bit of a hack, which results in some strange looking code, if you want an explanation of why you write it this way look HERE at this ARTICLE.
 
 We will write all our raymarching and signed-distance functions in global node that we can use later. First we will write the raymarch function which takes in the camera position and the view direction towards the current pixel and returns the distance to the current point from the camera.
+
+This is my recommended node setup:
+
+![Material Node Setup](../assets/imgs/RaymarchingUnreal/material_nodes.png)
+
+`Global Functions` and `RayMarch` are both custom shader nodes that you will have to implement.
 
 To start writing HLSL functions add the following to your custom node:
 
@@ -63,7 +71,6 @@ You can define `MAX_DIST`, `MAX_STEPS`, and `EPSILON` with:
 
 float raymarch( float3 camPos, float3 rayDir ) {
  	...
-  ...
 ```
 
 Now we need a `sceneSDF` function, so that we can calculate the distance to the surface at any point. The simplest SDF is sphere, so we can use that to start
@@ -77,7 +84,7 @@ float raymarch(...) {
   ...
 ```
 
-Now we can finally render something, although it won't look too impressive yet. First we need to add another custom HLSL node to the material graph, so that we can actually run the calculations.
+Now we can finally render something, although it won't look too impressive yet. First we need to add another custom HLSL node to the material graph, so that we can actually run the calculations. This node should output a `CMOT Float 4` and should take two inputs: `CameraPosition` and `RayDirection`
 
 ```c
 float depth = raymarch( CameraPosition, RayDirection );
@@ -132,10 +139,67 @@ First we need a direction vector for our light
 ```c
 float3 lightDir = normalize( float3( -0.3, -1.0, -0.3 ));
 
-float spec = pow( clamp( dot( -lightDir, normal ), 0, 1 ) );
+// the diffuse color of the surface
+float3 diffuseColor = float3( 0.8, 0.2, 0.0 );
 
+// calculate the specular reflection
+float diffuseLight = pow( clamp( dot( -lightDir, normal ), 0, 1 ) );
+float ambientLight = 0.2;
+
+float3 result = ( diffuseLight * diffuseColor ) ;
+return float4(result, 1.0);
+```
+
+You should now have a sphere that appears to be lit by a directional light. We can also add specular reflections and ambient lighting.
+
+```c
+float3 lightDir = normalize( float3( -0.3, -1.0, -0.3 ));
+
+// the diffuse color of the surface
+float3 diffuseColor = float3( 0.8, 0.2, 0.0 );
+
+// calculate the diffuse lighting
+float diffuseLight = clamp( dot( -lightDir, normal ), 0, 1 );
+float ambientLight = 0.2;
+
+// calculate specular reflections
+float3 reflectDir = reflect( -lightDir, normal );
+float specular = pow( clamp( dot( reflectDir, RayDirection ), 0.0, 1.0 ), 2 );
+
+
+float3 result = (diffuseLight + ambientLight) * diffuseColor + specular;
+return float4(result, 1.0);
 ```
 
 
+
+Now that we have a functional raymarcher we should take advantage of it. We can do a lot more than render a sphere. To start let's blend between two different shapes. You can find the SDFs for more shapes on [Inigo Quilez's website](https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm). I am using a sphere and a bounding box. Add these functions to your global custom node and then you can blend between them in your scene SDF.
+
+```c
+float boundingBoxSDF( float3 pos, float3 b, float e ) {
+  ...
+}
+float sphereSDF( float3 pos, float radius) {
+	return length(pos) - radius;
+}
+float sceneSDF( float3 pos ) {
+  float sphere = sphereSDF(pos, 40.0);
+  float box = boundingBoxSDF(pos, float3( 30.0, 30.0, 30.0 ), 5.0);
+  return lerp( sphere, box, 0.5 + sin(View.GameTime)/2 );
+}
+```
+
+Now your shape will blend back and forth between a sphere and a bounding box. This is only the simplest implementation of raymarching and there are many more things that you can achieve. If you make something using raymarching in Unreal please send it to me!
+
 ## Final Result
+
 <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Experimenting with raymarching in <a href="https://twitter.com/hashtag/UnrealEngine?src=hash&amp;ref_src=twsrc%5Etfw">#UnrealEngine</a> <a href="https://twitter.com/hashtag/gamedev?src=hash&amp;ref_src=twsrc%5Etfw">#gamedev</a> <a href="https://twitter.com/hashtag/indiedev?src=hash&amp;ref_src=twsrc%5Etfw">#indiedev</a> <a href="https://twitter.com/hashtag/creativecoding?src=hash&amp;ref_src=twsrc%5Etfw">#creativecoding</a> <a href="https://t.co/DEzWVnZnzP">pic.twitter.com/DEzWVnZnzP</a></p>&mdash; Void Goat (@VoidGoatDev) <a href="https://twitter.com/VoidGoatDev/status/1284916634830942213?ref_src=twsrc%5Etfw">July 19, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<a href="https://twitter.com/VoidGoatDev?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-size="large" data-show-count="false">Follow @VoidGoatDev</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+
+
+
+
+
