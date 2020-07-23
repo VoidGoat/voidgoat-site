@@ -1,7 +1,7 @@
 ---
 title: Raymarching in Unreal Engine 4
 date: 2020-07-20
-description: Learn how to implement raymarching in Unreal Engine using HLSL in a custom shader node
+description: Learn how to implement raymarching in Unreal Engine using HLSL in a custom shader node.
 thumbnail: RaymarchUnreal/thumbnail.png
 ---
 Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. However, there is a node that allows you to enter custom HLSL code though, which we will be taking advantage of.
@@ -135,7 +135,7 @@ return float4( normal, 1.0 );
 
 You should get the following:
 
-![]()
+![Sphere with normals](../assets/imgs/RaymarchingUnreal/normal-sphere.png)
 
 Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn't really look like a real object, since it has no lighting.
 
@@ -188,9 +188,9 @@ return float4(result, 1.0);
 
 You should now have a nice shiny sphere, like so:
 
-![]()
+![Raymarched Sphere](../assets/imgs/RaymarchingUnreal/shaded-sphere.png)
 
-Now that we have a functional raymarcher we should take advantage of it. We can do a lot more than render a sphere. For starters let's blend between two different shapes. You can find the SDFs for more shapes on [Inigo Quilez's website](https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm). I am using a sphere and a bounding box. Add these functions to your global custom node and then you can blend between them in your scene SDF.
+Now that we have a functional raymarcher we should take advantage of it. We can do a lot more than render a sphere. For starters let's blend between two different shapes. You can find the SDFs for more shapes on [Inigo Quilez's website](https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm). I am using a sphere and a bounding box. Add these functions to your `Global Function` node and then you can blend between them in your scene SDF.
 
 ```c
 float boundingBoxSDF( float3 p, float3 b, float e ) {
@@ -211,27 +211,69 @@ float sceneSDF( float3 pos ) {
 }
 ```
 
-Now your shape will blend back and forth between a sphere and a bounding box. This is only the simplest implementation of raymarching and there are many more things that you can achieve. If you make something using raymarching in Unreal please send it to me!
+Now your shape will blend back and forth between a sphere and a bounding box.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/lz9bGD4EmIo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+
 
 ## Fractals!
 
-The next great thing you can do with raymarching is render fractals. We will once again use a formula from Iniqo Quilez. They have an SDF for the Mandelbulb fractal on their site https://www.iquilezles.org/www/articles/mandelbulb/mandelbulb.htm along with lots of other interesting insights into the fractal.
+The next great thing you can do with raymarching is render fractals. We will once again use a formula from Iniqo Quilez. They have an SDF for the Mandelbulb fractal on their site: https://www.iquilezles.org/www/articles/mandelbulb/mandelbulb.htm along with lots of other interesting info about the fractal.
 
 After some slight modifications we can pop this SDF into our `sceneSDF` function and we're done (sorta)!
 
 ```c
-float mandelbulbSDF( ) {
-  
+float mandelbulbSDF( float3 p, float power ) {
+	float3 w = p;
+    float m = dot(w,w);
+	float dz = 1.0;
+    
+	for( int i=0; i<3; i++ )
+    {
+        dz = power*pow(sqrt(m), power - 1.0 )*dz + 1.0;
+        
+        float r = length(w);
+        float b = power*acos( w.y/r);
+        float a = power*atan2( w.x, w.z );
+        w = p + pow(r,power) * float3( sin(b)*sin(a), cos(b), sin(b)*cos(a) );
+      
+        m = dot(w,w);
+		if( m > 256.0 )
+            break;
+    }
+
+    return 0.25*log(m)*sqrt(m)/dz;
 }
 ```
 
-You should also probably reduce `MAX_STEPS` to improve performance, and the mandelbulb will be kind of small in Unreal units, so I recommend dividing the `Camera Position` and `Local Position` nodes by `10`, to increase the scale of the fractal.
+```c
+float sceneSDF( float3 pos ) {
+    return mandelbulbSDF( pos, 7.0 );
+}
+```
+
+You should also probably reduce `MAX_STEPS` or `EPSILON` to improve performance, and the Mandelbulb will be too small in Unreal units, so I recommend dividing the `Camera Position` and `Local Position` nodes by `40`, to increase the scale of the fractal. Like this:
+
+![Fractal node setup](../assets/imgs/RaymarchingUnreal/fractal-nodes.png)
+
+Right now we're just coloring the fractal as if it were a lit surface, however there are lots of interesting ways to color a fractal, but I will leave it up to you to investigate that further. 
+
+You can also animate the `power` parameter over time for a great effect:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/rn9fhQ6b8BY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
 
-## Final Result
+## Further Readings
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Experimenting with raymarching in <a href="https://twitter.com/hashtag/UnrealEngine?src=hash&amp;ref_src=twsrc%5Etfw">#UnrealEngine</a> <a href="https://twitter.com/hashtag/gamedev?src=hash&amp;ref_src=twsrc%5Etfw">#gamedev</a> <a href="https://twitter.com/hashtag/indiedev?src=hash&amp;ref_src=twsrc%5Etfw">#indiedev</a> <a href="https://twitter.com/hashtag/creativecoding?src=hash&amp;ref_src=twsrc%5Etfw">#creativecoding</a> <a href="https://t.co/DEzWVnZnzP">pic.twitter.com/DEzWVnZnzP</a></p>&mdash; Void Goat (@VoidGoatDev) <a href="https://twitter.com/VoidGoatDev/status/1284916634830942213?ref_src=twsrc%5Etfw">July 19, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+This is only the simplest implementation of raymarching and there are many more beautiful effects that you can achieve.  I highly recommend you look at Inigo Quilez's site, it is a treasure trove on interesting raymarching applications: https://www.iquilezles.org/www/index.htm
+
+ If you make something cool using raymarching in Unreal please send it to me!
+
+
+
+
 
 <a href="https://twitter.com/VoidGoatDev?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-size="large" data-show-count="false">Follow @VoidGoatDev</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
