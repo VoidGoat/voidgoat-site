@@ -141,17 +141,28 @@
 </p>
 <div class="markdown-body">
 
-<p>Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. There is a node that allows you to enter custom HLSL code into though, which we will be taking advantage of.</p>
 
-<p>I am not going to explain raymarching in-depth, so if you want to learn more this VIDEO explains it well, and this ARTICLE offers some easy to understand shader examples.</p>
+<p>Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. However, there is a node that allows you to enter custom HLSL code though, which we will be taking advantage of.</p>
 
-<p>We will be placing our raymarching shader onto a cube, so that it can be placed and viewed in the scene. This method was adapted from this VIDEO, which uses the same method and implements it in Unity.</p>
+<p>I am not going to explain raymarching in-depth, so if you want to learn more this <a href="https://www.youtube.com/watch?v=Cp5WWtMoeKg">Video by Sebastian Lague</a> explains it well, and this <a href="http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/">article by Jamie Wong</a> offers some easy to understand shader examples.</p>
 
-<p>To begin we will start writing our raymarching functions in a custom shader node. To be able to write functions in the custom node requires a bit of a hack, which results in some strange looking code, if you want an explanation of why you write it this way look HERE at this ARTICLE.</p>
+<p>We will be placing our raymarching shader onto a cube, so that it can be placed and viewed in the scene. This method was adapted from this <a href="https://www.youtube.com/watch?v=S8AWd66hoCo">video by Art of Code</a>, which uses the same method and implements it in Unity.</p>
+
+<h2 id="setting-up-the-material">Setting up the material</h2>
+
+<p>First we need to create a material where we can write our raymarching code. You should set the material to be a Surface material that is Masked, Unlit, and Two Sided. It should be Unlit since we will be calculating our own lighting, and it should be Two-Sided, so that we can still see our raymarched surface even when we are inside the bounds of the mesh.</p>
+
+<p>To begin we will start writing our raymarching functions in a custom shader node. To be able to write functions in the custom node requires a bit of a hack, which results in some strange looking code, if you want an explanation of why you write it this way check out this <a href="https://bebylon.dev/ue4guide/graphics-development/shader-development/tips-tricks/">article</a>, but essentially each custom node is its own HLSL function, so we want to escape from that function, so that we can write our own new functions.</p>
 
 <p>We will write all our raymarching and signed-distance functions in global node that we can use later. First we will write the raymarch function which takes in the camera position and the view direction towards the current pixel and returns the distance to the current point from the camera.</p>
 
-<p>To start writing HLSL functions add the following to your custom node:</p>
+<p>This is my recommended node setup:</p>
+
+<p><img src="/assets/imgs/RaymarchingUnreal/material_nodes.png" alt="Material Node Setup" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">Global Functions</code> and <code class="language-plaintext highlighter-rouge">RayMarch</code> are both custom shader nodes that you will have to implement. To gain access to our <code class="language-plaintext highlighter-rouge">Global Functions</code> in other nodes we have to use its output somewhere in the graph, so we can just multiply it with any other node to make its functions accessible.</p>
+
+<p>To start writing HLSL functions add the following to your <code class="language-plaintext highlighter-rouge">Global Functions</code> custom node:</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// this escapes from the current HLSL function and allows us to write our own functions</span>
 	<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
@@ -160,8 +171,10 @@
 <span class="kt">float</span> <span class="nf">raymarch</span><span class="p">(</span> <span class="n">float3</span> <span class="n">camPos</span><span class="p">,</span> <span class="n">float3</span> <span class="n">rayDir</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">// raymarching code goes here</span>
 
-<span class="c1">// note the lack of closing bracket</span>
+<span class="c1">// note the lack of closing bracket on the final function</span>
 </code></pre></div></div>
+
+<p>I recommend you write your HLSL in a separate text editor and then paste it into Unreal, since it can be cumbersome to write code in the text box.</p>
 
 <p>Now we can actually write the raymarcher:</p>
 
@@ -175,7 +188,7 @@
         <span class="n">float3</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">camPos</span> <span class="o">+</span> <span class="p">(</span> <span class="n">rayDir</span> <span class="o">*</span> <span class="n">depth</span> <span class="p">);</span>
 
         <span class="c1">// Calcualte shortest distance to scene at position</span>
-        <span class="n">dist</span> <span class="o">=</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span> <span class="p">);</span>
+        <span class="kt">float</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span> <span class="p">);</span>
 
         <span class="n">depth</span> <span class="o">+=</span> <span class="n">dist</span><span class="p">;</span>
       	<span class="c1">// finish when very close to a surface or when ray has travelled to far</span>
@@ -184,21 +197,20 @@
         <span class="p">}</span>
     <span class="p">}</span>
     <span class="k">return</span> <span class="n">depth</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="c1">// remember to leave out the final bracket!</span>
 </code></pre></div></div>
 
 <p>You can define <code class="language-plaintext highlighter-rouge">MAX_DIST</code>, <code class="language-plaintext highlighter-rouge">MAX_STEPS</code>, and <code class="language-plaintext highlighter-rouge">EPSILON</code> with:</p>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define MAX_DIST 100.0
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define MAX_DIST 10000.0
 #define MAX_STEPS 100
 #define EPSILON 0.0001
 </span>
 <span class="kt">float</span> <span class="nf">raymarch</span><span class="p">(</span> <span class="n">float3</span> <span class="n">camPos</span><span class="p">,</span> <span class="n">float3</span> <span class="n">rayDir</span> <span class="p">)</span> <span class="p">{</span>
  	<span class="p">...</span>
-  <span class="p">...</span>
 </code></pre></div></div>
 
-<p>Now we need a <code class="language-plaintext highlighter-rouge">sceneSDF</code> function, so that we can calculate the distance to the surface at any point. The simplest SDF is sphere, so we can use that to start</p>
+<p>Now we need a <code class="language-plaintext highlighter-rouge">sceneSDF</code> function, so that we can calculate the distance to the surface at any point. The simplest SDF is a sphere, so we can use that to start</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">sceneSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">pos</span> <span class="p">)</span> <span class="p">{</span>
  	<span class="k">return</span> <span class="n">length</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">40</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
@@ -208,12 +220,12 @@
   <span class="p">...</span>
 </code></pre></div></div>
 
-<p>Now we can finally render something, although it won’t look too impressive yet. First we need to add another custom HLSL node to the material graph, so that we can actually run the calculations.</p>
+<p>Now we can finally render something, although it won’t look too impressive yet. First we need to add some code to our <code class="language-plaintext highlighter-rouge">RayMarch</code> node in the material graph, so that we can actually run the raymarching calculations. This node should output a <code class="language-plaintext highlighter-rouge">CMOT Float 4</code> and should take two inputs: <code class="language-plaintext highlighter-rouge">CameraPosition</code> and <code class="language-plaintext highlighter-rouge">RayDirection</code></p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="n">depth</span> <span class="o">=</span> <span class="n">raymarch</span><span class="p">(</span> <span class="n">CameraPosition</span><span class="p">,</span> <span class="n">RayDirection</span> <span class="p">);</span>
 
 <span class="c1">// if no surface was hit then return black</span>
-<span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;=</span> <span class="n">MAX_STEPS</span><span class="p">)</span> <span class="p">{</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">depth</span> <span class="o">&gt;=</span> <span class="n">MAX_DIST</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="n">float4</span><span class="p">(</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
 <span class="p">}</span>
 
@@ -221,19 +233,22 @@
 <span class="k">return</span> <span class="nf">float4</span><span class="p">(</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
 </code></pre></div></div>
 
-<p>If you’ve done everything correctly so far you should see a white circle in the middle of any mesh that you apply the material to. The circle is actually a sphere, but it doesn’t have any shading, so it doesn’t look like much.</p>
+<p>Send the output of this new node to <code class="language-plaintext highlighter-rouge">Emissive Color</code> and then mask out the alpha channel and send that to <code class="language-plaintext highlighter-rouge">Opacity Mask</code> If you’ve done everything correctly so far you should see a white circle in the middle of any mesh that you apply the material to. The circle is actually a sphere, but it doesn’t have any shading yet, so it doesn’t look like much.</p>
 
 <h2 id="calculating-normals">Calculating Normals</h2>
 
 <p>To shade the sphere properly we need to get the normals of the sphere, we could do this mathematically, but a more robust method is to estimate them by sampling the SDF.</p>
 
-<p>Add the following function to the global custom node</p>
+<p>Add the following function to the <code class="language-plaintext highlighter-rouge">Global Functions</code> custom node</p>
 
-<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="nf">estimateNormals</span><span class="p">(</span><span class="n">vec3</span> <span class="n">pos</span><span class="p">)</span> <span class="p">{</span>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="nf">estimateNormals</span><span class="p">(</span><span class="n">float3</span> <span class="n">pos</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span>
-  	<span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span> <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">),</span>
-    <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span> <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">),</span>
-    <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span> <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span>
+  	<span class="n">sceneSDF</span><span class="p">(</span><span class="n">float3</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span> <span class="p">)</span> <span class="p">)</span>
+    <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span><span class="n">float3</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">yz</span><span class="p">)</span> <span class="p">),</span>
+    <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">z</span><span class="p">)</span> <span class="p">)</span>
+    <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">EPSILON</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">z</span> <span class="p">)</span> <span class="p">),</span>
+    <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span><span class="n">pos</span><span class="p">.</span><span class="n">xy</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">z</span> <span class="o">+</span> <span class="n">EPSILON</span><span class="p">)</span> <span class="p">)</span>
+    <span class="o">-</span> <span class="n">sceneSDF</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="n">pos</span><span class="p">.</span><span class="n">xy</span><span class="p">,</span> <span class="n">pos</span><span class="p">.</span><span class="n">z</span> <span class="o">-</span> <span class="n">EPSILON</span> <span class="p">)</span> <span class="p">)</span>
   <span class="p">));</span>
 <span class="p">}</span>
 </code></pre></div></div>
@@ -245,28 +260,142 @@
 <span class="p">}</span>
 
 <span class="c1">// visualize the estimated normals</span>
-<span class="n">float3</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">calculateNormals</span><span class="p">(</span> <span class="n">CameraPosition</span> <span class="o">+</span> <span class="p">(</span><span class="n">RayDirection</span> <span class="o">*</span> <span class="n">depth</span><span class="p">));</span>
+<span class="n">float3</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">estimateNormals</span><span class="p">(</span> <span class="n">CameraPosition</span> <span class="o">+</span> <span class="p">(</span><span class="n">RayDirection</span> <span class="o">*</span> <span class="n">depth</span><span class="p">));</span>
 <span class="k">return</span> <span class="nf">float4</span><span class="p">(</span> <span class="n">normal</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
 </code></pre></div></div>
+
+<p>You should get the following:</p>
+
+<p><img src="/assets/imgs/RaymarchingUnreal/normal-sphere.png" alt="Sphere with normals" /></p>
 
 <p>Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn’t really look like a real object, since it has no lighting.</p>
 
 <h2 id="phong-shading">Phong Shading</h2>
 
-<p>We are going to use Phong shading, since it is fairly simple to implement. Now that we have the surface normals we can use them to calculate how much light would hit each part of the surface. We are going to implement a simple directional light, but you could add point or spot lights with the same method.</p>
+<p>We want our object to look like a real, lit object, so we are going to use Phong shading, since it is fairly simple to implement. Now that we have the surface normals we can use them to calculate how much light would hit each part of the surface. We are going to implement a simple directional light, but you could add point or spot lights with the same method.</p>
 
-<p>First we need a direction vector for our light</p>
+<p>First we need a direction vector for our light and then we take the dot product of the light vector with the normal vector to get the amount of light hitting the surface.</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="n">lightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span> <span class="p">));</span>
 
-<span class="kt">float</span> <span class="n">spec</span> <span class="o">=</span> <span class="n">pow</span><span class="p">(</span> <span class="n">clamp</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span> <span class="o">-</span><span class="n">lightDir</span><span class="p">,</span> <span class="n">normal</span> <span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">)</span> <span class="p">);</span>
+<span class="c1">// estimate surface normal</span>
+<span class="n">float3</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">estimateNormals</span><span class="p">(</span> <span class="n">CameraPosition</span> <span class="o">+</span> <span class="n">RayDirection</span><span class="o">*</span><span class="n">depth</span><span class="p">);</span>
 
+<span class="c1">// the diffuse color of the surface</span>
+<span class="n">float3</span> <span class="n">diffuseColor</span> <span class="o">=</span> <span class="n">float3</span><span class="p">(</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
+
+<span class="c1">// calculate the amount of light hitting the surface</span>
+<span class="kt">float</span> <span class="n">diffuseLight</span> <span class="o">=</span> <span class="n">clamp</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span> <span class="o">-</span><span class="n">lightDir</span><span class="p">,</span> <span class="n">normal</span> <span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">);</span>
+
+<span class="n">float3</span> <span class="n">result</span> <span class="o">=</span> <span class="p">(</span> <span class="n">diffuseLight</span> <span class="o">*</span> <span class="n">diffuseColor</span> <span class="p">)</span> <span class="p">;</span>
+<span class="k">return</span> <span class="nf">float4</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
 </code></pre></div></div>
 
-<h2 id="final-result">Final Result</h2>
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Experimenting with raymarching in <a href="https://twitter.com/hashtag/UnrealEngine?src=hash&amp;ref_src=twsrc%5Etfw">#UnrealEngine</a> <a href="https://twitter.com/hashtag/gamedev?src=hash&amp;ref_src=twsrc%5Etfw">#gamedev</a> <a href="https://twitter.com/hashtag/indiedev?src=hash&amp;ref_src=twsrc%5Etfw">#indiedev</a> <a href="https://twitter.com/hashtag/creativecoding?src=hash&amp;ref_src=twsrc%5Etfw">#creativecoding</a> <a href="https://t.co/DEzWVnZnzP">pic.twitter.com/DEzWVnZnzP</a></p>&mdash; Void Goat (@VoidGoatDev) <a href="https://twitter.com/VoidGoatDev/status/1284916634830942213?ref_src=twsrc%5Etfw">July 19, 2020</a></blockquote>
-<script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>You should now have a sphere that appears to be lit by a directional light. We can now also add specular reflections and ambient lighting.</p>
 
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="n">lightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span> <span class="p">));</span>
+
+<span class="n">float3</span> <span class="n">normal</span> <span class="o">=</span> <span class="n">estimateNormals</span><span class="p">(</span> <span class="n">CameraPosition</span> <span class="o">+</span> <span class="n">RayDirection</span><span class="o">*</span><span class="n">depth</span><span class="p">);</span>
+
+<span class="c1">// the diffuse color of the surface</span>
+<span class="n">float3</span> <span class="n">diffuseColor</span> <span class="o">=</span> <span class="n">float3</span><span class="p">(</span> <span class="mi">0</span><span class="p">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
+
+<span class="c1">// calculate the amount of light hitting the surface</span>
+<span class="kt">float</span> <span class="n">diffuseLight</span> <span class="o">=</span> <span class="n">clamp</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span> <span class="o">-</span><span class="n">lightDir</span><span class="p">,</span> <span class="n">normal</span> <span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="p">);</span>
+
+<span class="c1">// amount of ambient light applied to entire surface</span>
+<span class="kt">float</span> <span class="n">ambientLight</span> <span class="o">=</span> <span class="mi">0</span><span class="p">.</span><span class="mi">2</span><span class="p">;</span>
+
+<span class="c1">// calculate specular reflections</span>
+<span class="n">float3</span> <span class="n">reflectDir</span> <span class="o">=</span> <span class="n">reflect</span><span class="p">(</span> <span class="o">-</span><span class="n">lightDir</span><span class="p">,</span> <span class="n">normal</span> <span class="p">);</span>
+<span class="kt">float</span> <span class="n">specular</span> <span class="o">=</span> <span class="n">pow</span><span class="p">(</span> <span class="n">clamp</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span> <span class="n">reflectDir</span><span class="p">,</span> <span class="n">RayDirection</span> <span class="p">),</span> <span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="p">),</span> <span class="mi">16</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
+
+
+<span class="n">float3</span> <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">diffuseLight</span> <span class="o">+</span> <span class="n">ambientLight</span><span class="p">)</span> <span class="o">*</span> <span class="n">diffuseColor</span> <span class="o">+</span> <span class="n">specular</span><span class="p">;</span>
+<span class="k">return</span> <span class="nf">float4</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>You should now have a nice shiny sphere, like so:</p>
+
+<p><img src="/assets/imgs/RaymarchingUnreal/shaded-sphere.png" alt="Raymarched Sphere" /></p>
+
+<p>Now that we have a functional raymarcher we should take advantage of it. We can do a lot more than render a sphere. For starters let’s blend between two different shapes. You can find the SDFs for more shapes on <a href="https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm">Inigo Quilez’s website</a>. I am using a sphere and a bounding box. Add these functions to your <code class="language-plaintext highlighter-rouge">Global Function</code> node and then you can blend between them in your scene SDF.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">boundingBoxSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">p</span><span class="p">,</span> <span class="n">float3</span> <span class="n">b</span><span class="p">,</span> <span class="kt">float</span> <span class="n">e</span> <span class="p">)</span> <span class="p">{</span>
+   <span class="n">p</span> <span class="o">=</span> <span class="n">abs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-</span><span class="n">b</span><span class="p">;</span>
+  <span class="n">float3</span> <span class="n">q</span> <span class="o">=</span> <span class="n">abs</span><span class="p">(</span><span class="n">p</span><span class="o">+</span><span class="n">e</span><span class="p">)</span><span class="o">-</span><span class="n">e</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">min</span><span class="p">(</span><span class="n">min</span><span class="p">(</span>
+      <span class="n">length</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="n">float3</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="n">q</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="n">q</span><span class="p">.</span><span class="n">z</span><span class="p">),</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">))</span><span class="o">+</span><span class="n">min</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="n">max</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="n">q</span><span class="p">.</span><span class="n">z</span><span class="p">)),</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">),</span>
+      <span class="n">length</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="n">float3</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="n">q</span><span class="p">.</span><span class="n">z</span><span class="p">),</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">))</span><span class="o">+</span><span class="n">min</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="n">max</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="n">q</span><span class="p">.</span><span class="n">z</span><span class="p">)),</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">)),</span>
+      <span class="n">length</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="n">float3</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="n">q</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="n">p</span><span class="p">.</span><span class="n">z</span><span class="p">),</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">))</span><span class="o">+</span><span class="n">min</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">x</span><span class="p">,</span><span class="n">max</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">y</span><span class="p">,</span><span class="n">p</span><span class="p">.</span><span class="n">z</span><span class="p">)),</span><span class="mi">0</span><span class="p">.</span><span class="mi">0</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="kt">float</span> <span class="nf">sphereSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">pos</span><span class="p">,</span> <span class="kt">float</span> <span class="n">radius</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="n">length</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="n">radius</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">float</span> <span class="nf">sceneSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">pos</span> <span class="p">)</span> <span class="p">{</span>
+  <span class="kt">float</span> <span class="n">sphere</span> <span class="o">=</span> <span class="n">sphereSDF</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="mi">40</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+  <span class="kt">float</span> <span class="n">box</span> <span class="o">=</span> <span class="n">boundingBoxSDF</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">float3</span><span class="p">(</span> <span class="mi">30</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">.</span><span class="mi">0</span> <span class="p">),</span> <span class="mi">5</span><span class="p">.</span><span class="mi">0</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">lerp</span><span class="p">(</span> <span class="n">sphere</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="mi">0</span><span class="p">.</span><span class="mi">5</span> <span class="o">+</span> <span class="n">sin</span><span class="p">(</span><span class="n">View</span><span class="p">.</span><span class="n">GameTime</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Now your shape will blend back and forth between a sphere and a bounding box.</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/lz9bGD4EmIo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<h2 id="fractals">Fractals!</h2>
+
+<p>Another great thing you can do with raymarching is render fractals. We will once again use a formula from Iniqo Quilez. They have an SDF for the Mandelbulb fractal on their site: <a href="https://www.iquilezles.org/www/articles/mandelbulb/mandelbulb.htm">https://www.iquilezles.org/www/articles/mandelbulb/mandelbulb.htm</a> along with lots of other interesting info about the fractal.</p>
+
+<p>After some slight modifications we can pop this SDF into our <code class="language-plaintext highlighter-rouge">sceneSDF</code> function and we’re done (sorta)!</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">mandelbulbSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">p</span><span class="p">,</span> <span class="kt">float</span> <span class="n">power</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="n">float3</span> <span class="n">w</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">m</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">w</span><span class="p">);</span>
+	<span class="kt">float</span> <span class="n">dz</span> <span class="o">=</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+
+	<span class="k">for</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="n">power</span><span class="o">*</span><span class="n">pow</span><span class="p">(</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">power</span> <span class="o">-</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span> <span class="p">)</span><span class="o">*</span><span class="n">dz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
+
+        <span class="kt">float</span> <span class="n">r</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">w</span><span class="p">);</span>
+        <span class="kt">float</span> <span class="n">b</span> <span class="o">=</span> <span class="n">power</span><span class="o">*</span><span class="n">acos</span><span class="p">(</span> <span class="n">w</span><span class="p">.</span><span class="n">y</span><span class="o">/</span><span class="n">r</span><span class="p">);</span>
+        <span class="kt">float</span> <span class="n">a</span> <span class="o">=</span> <span class="n">power</span><span class="o">*</span><span class="n">atan2</span><span class="p">(</span> <span class="n">w</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">.</span><span class="n">z</span> <span class="p">);</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">pow</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">power</span><span class="p">)</span> <span class="o">*</span> <span class="n">float3</span><span class="p">(</span> <span class="n">sin</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">cos</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">sin</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="p">);</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">w</span><span class="p">);</span>
+		<span class="k">if</span><span class="p">(</span> <span class="n">m</span> <span class="o">&gt;</span> <span class="mi">256</span><span class="p">.</span><span class="mi">0</span> <span class="p">)</span>
+            <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">.</span><span class="mi">25</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">*</span><span class="n">sqrt</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="o">/</span><span class="n">dz</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">sceneSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">pos</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">mandelbulbSDF</span><span class="p">(</span> <span class="n">pos</span><span class="p">,</span> <span class="mi">7</span><span class="p">.</span><span class="mi">0</span> <span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You should also probably reduce <code class="language-plaintext highlighter-rouge">MAX_STEPS</code> or <code class="language-plaintext highlighter-rouge">EPSILON</code> to improve performance, and the Mandelbulb will initially be too small in Unreal units, so I recommend dividing the <code class="language-plaintext highlighter-rouge">Camera Position</code> and <code class="language-plaintext highlighter-rouge">Local Position</code> nodes by <code class="language-plaintext highlighter-rouge">40</code>, to increase the scale of the fractal. Like this:</p>
+
+<p><img src="/assets/imgs/RaymarchingUnreal/fractal-nodes.png" alt="Fractal node setup" /></p>
+
+<p>Right now we’re just coloring the fractal as if it were a lit surface, however there are lots of interesting ways to color a fractal, but I will leave it up to you to investigate that further.</p>
+
+<p>You can also animate the <code class="language-plaintext highlighter-rouge">power</code> parameter over time for a great effect:</p>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/rn9fhQ6b8BY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<h2 id="further-readings">Further Readings</h2>
+
+<p>This is only the simplest implementation of raymarching and there are many more beautiful effects that you can achieve.  I highly recommend you look at Inigo Quilez’s site, it is a treasure trove on interesting raymarching applications: https://www.iquilezles.org/www/index.htm</p>
+
+<p>If you make something cool using raymarching in Unreal please send it to me!</p>
+
+<p>You can follow me on Twitter for more computer graphics projects and articles in the future:</p>
+
+<p><a href="https://twitter.com/VoidGoatDev?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-size="large" data-show-count="false">Follow @VoidGoatDev</a><script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
 
 </div>
 
