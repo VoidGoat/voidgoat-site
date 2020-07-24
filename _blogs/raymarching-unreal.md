@@ -1,6 +1,6 @@
 ---
-title: Raymarching in Unreal Engine 4
-date: 2020-07-20
+title: Raymarching in Unreal Engine
+date: 2020-07-24
 description: Learn how to implement raymarching in Unreal Engine using HLSL in a custom shader node.
 ---
 
@@ -10,7 +10,7 @@ description: Learn how to implement raymarching in Unreal Engine using HLSL in a
 
 
 
-Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. However, there is a node that allows you to enter custom HLSL code though, which we will be taking advantage of.
+Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. However, there is a node that allows you to enter custom HLSL code though, which we will be taking advantage of.
 
 I am not going to explain raymarching in-depth, so if you want to learn more this [Video by Sebastian Lague](https://www.youtube.com/watch?v=Cp5WWtMoeKg) explains it well, and this [article by Jamie Wong](http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/) offers some easy to understand shader examples.
 
@@ -22,7 +22,7 @@ First we need to create a material where we can write our raymarching code. You 
 
 To begin we will start writing our raymarching functions in a custom shader node. To be able to write functions in the custom node requires a bit of a hack, which results in some strange looking code, if you want an explanation of why you write it this way check out this [article](https://bebylon.dev/ue4guide/graphics-development/shader-development/tips-tricks/), but essentially each custom node is its own HLSL function, so we want to escape from that function, so that we can write our own new functions.
 
-We will write all our raymarching and signed-distance functions in global node that we can use later. First we will write the raymarch function which takes in the camera position and the view direction towards the current pixel and returns the distance to the current point from the camera.
+We will write all our raymarching and signed-distance functions in a global node that we can use later. First we will write the raymarch function which takes in the camera position and the view direction towards the current pixel and returns the distance to the current point from the camera.
 
 This is my recommended node setup:
 
@@ -81,7 +81,7 @@ float raymarch( float3 camPos, float3 rayDir ) {
  	...
 ```
 
-Now we need a `sceneSDF` function, so that we can calculate the distance to the surface at any point. The simplest SDF is a sphere, so we can use that to start
+Now we need a `sceneSDF` function, so that we can calculate the distance to the surface at any point. The simplest SDF is a sphere, so we can use that to start.
 
 ```c
 float sceneSDF( float3 pos ) {
@@ -112,7 +112,7 @@ Send the output of this new node to `Emissive Color` and then mask out the alpha
 
 To shade the sphere properly we need to get the normals of the sphere, we could do this mathematically, but a more robust method is to estimate them by sampling the SDF.
 
-Add the following function to the `Global Functions` custom node
+Add the following function to the `Global Functions` custom node:
 
 ```c
 float3 estimateNormals(float3 pos) {
@@ -143,13 +143,13 @@ You should get the following:
 
 ![Sphere with normals]({{img}}/normal-sphere.png)
 
-Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn't really look like a real object, since it has no lighting.
+Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn't really look like a real object since it has no lighting.
 
 ## Phong Shading
 
-We want our object to look like a real, lit object, so we are going to use Phong shading, since it is fairly simple to implement. Now that we have the surface normals we can use them to calculate how much light would hit each part of the surface. We are going to implement a simple directional light, but you could add point or spot lights with the same method.
+We want our object to look like a real, lit object, so we are going to use Phong shading since it is fairly simple to implement. Now that we have the surface normals we can use them to calculate how much light would hit each part of the surface. We are going to implement a simple directional light, but you could add point or spot lights with the same method.
 
-First we need a direction vector for our light and then we take the dot product of the light vector with the normal vector to get the amount of light hitting the surface.
+First we need a direction vector for our light, and then we take the dot product of the light vector with the normal vector to get the amount of light hitting the surface.
 
 ```c
 float3 lightDir = normalize( float3( -0.3, -1.0, -0.3 ));
@@ -273,7 +273,7 @@ You can also animate the `power` parameter over time for a great effect:
 
 ## Further Readings
 
-This is only the simplest implementation of raymarching and there are many more beautiful effects that you can achieve.  I highly recommend you look at Inigo Quilez's site, it is a treasure trove on interesting raymarching applications: https://www.iquilezles.org/www/index.htm
+This is only the simplest implementation of raymarching and there are many more beautiful effects that you can achieve. I highly recommend you look at Inigo Quilez's site, it is a treasure trove of interesting raymarching applications: [https://www.iquilezles.org/www/index.htm](https://www.iquilezles.org/www/index.htm)
 
  If you make something cool using raymarching in Unreal please send it to me!
 

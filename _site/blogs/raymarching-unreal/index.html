@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Raymarching in Unreal Engine 4</title>
+  <title>Raymarching in Unreal Engine</title>
 
   <link rel="stylesheet" href= /assets/css/styles.css>
   <!-- <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap" rel="stylesheet"> -->
@@ -129,20 +129,20 @@
 </script>
 
   <div class="content">
-    <h1>Raymarching in Unreal Engine 4</h1>
+    <h1>Raymarching in Unreal Engine</h1>
 
 
-<img src="/assets/imgs/RaymarchingUnreal/header.png" alt=" header">
+<img src="/assets/imgs/raymarching-unreal/header.png" alt=" header">
 
 <p>
-  20 Jul 2020
+  24 Jul 2020
 
   <hr>
 </p>
 <div class="markdown-body">
 
 
-<p>Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine, since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. However, there is a node that allows you to enter custom HLSL code though, which we will be taking advantage of.</p>
+<p>Raymarching is a fascinating rendering technique, and is useful for rendering a wide variety of effects. However, it is not particularly easy to implement raymarching in Unreal Engine since it does not provide easy access to a shader scripting language, instead you have to create shaders using the visual material editor. However, there is a node that allows you to enter custom HLSL code though, which we will be taking advantage of.</p>
 
 <p>I am not going to explain raymarching in-depth, so if you want to learn more this <a href="https://www.youtube.com/watch?v=Cp5WWtMoeKg">Video by Sebastian Lague</a> explains it well, and this <a href="http://jamie-wong.com/2016/07/15/ray-marching-signed-distance-functions/">article by Jamie Wong</a> offers some easy to understand shader examples.</p>
 
@@ -154,11 +154,11 @@
 
 <p>To begin we will start writing our raymarching functions in a custom shader node. To be able to write functions in the custom node requires a bit of a hack, which results in some strange looking code, if you want an explanation of why you write it this way check out this <a href="https://bebylon.dev/ue4guide/graphics-development/shader-development/tips-tricks/">article</a>, but essentially each custom node is its own HLSL function, so we want to escape from that function, so that we can write our own new functions.</p>
 
-<p>We will write all our raymarching and signed-distance functions in global node that we can use later. First we will write the raymarch function which takes in the camera position and the view direction towards the current pixel and returns the distance to the current point from the camera.</p>
+<p>We will write all our raymarching and signed-distance functions in a global node that we can use later. First we will write the raymarch function which takes in the camera position and the view direction towards the current pixel and returns the distance to the current point from the camera.</p>
 
 <p>This is my recommended node setup:</p>
 
-<p><img src="/assets/imgs/RaymarchingUnreal/material_nodes.png" alt="Material Node Setup" /></p>
+<p><img src="/assets/imgs/raymarching-unreal/material_nodes.png" alt="Material Node Setup" /></p>
 
 <p><code class="language-plaintext highlighter-rouge">Global Functions</code> and <code class="language-plaintext highlighter-rouge">RayMarch</code> are both custom shader nodes that you will have to implement. To gain access to our <code class="language-plaintext highlighter-rouge">Global Functions</code> in other nodes we have to use its output somewhere in the graph, so we can just multiply it with any other node to make its functions accessible.</p>
 
@@ -210,7 +210,7 @@
  	<span class="p">...</span>
 </code></pre></div></div>
 
-<p>Now we need a <code class="language-plaintext highlighter-rouge">sceneSDF</code> function, so that we can calculate the distance to the surface at any point. The simplest SDF is a sphere, so we can use that to start</p>
+<p>Now we need a <code class="language-plaintext highlighter-rouge">sceneSDF</code> function, so that we can calculate the distance to the surface at any point. The simplest SDF is a sphere, so we can use that to start.</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">float</span> <span class="nf">sceneSDF</span><span class="p">(</span> <span class="n">float3</span> <span class="n">pos</span> <span class="p">)</span> <span class="p">{</span>
  	<span class="k">return</span> <span class="n">length</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">-</span> <span class="mi">40</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
@@ -239,7 +239,7 @@
 
 <p>To shade the sphere properly we need to get the normals of the sphere, we could do this mathematically, but a more robust method is to estimate them by sampling the SDF.</p>
 
-<p>Add the following function to the <code class="language-plaintext highlighter-rouge">Global Functions</code> custom node</p>
+<p>Add the following function to the <code class="language-plaintext highlighter-rouge">Global Functions</code> custom node:</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="nf">estimateNormals</span><span class="p">(</span><span class="n">float3</span> <span class="n">pos</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">return</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span>
@@ -266,15 +266,15 @@
 
 <p>You should get the following:</p>
 
-<p><img src="/assets/imgs/RaymarchingUnreal/normal-sphere.png" alt="Sphere with normals" /></p>
+<p><img src="/assets/imgs/raymarching-unreal/normal-sphere.png" alt="Sphere with normals" /></p>
 
-<p>Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn’t really look like a real object, since it has no lighting.</p>
+<p>Now the material should look more like a sphere, since it should be displaying the surface normals as colors. However, it still doesn’t really look like a real object since it has no lighting.</p>
 
 <h2 id="phong-shading">Phong Shading</h2>
 
-<p>We want our object to look like a real, lit object, so we are going to use Phong shading, since it is fairly simple to implement. Now that we have the surface normals we can use them to calculate how much light would hit each part of the surface. We are going to implement a simple directional light, but you could add point or spot lights with the same method.</p>
+<p>We want our object to look like a real, lit object, so we are going to use Phong shading since it is fairly simple to implement. Now that we have the surface normals we can use them to calculate how much light would hit each part of the surface. We are going to implement a simple directional light, but you could add point or spot lights with the same method.</p>
 
-<p>First we need a direction vector for our light and then we take the dot product of the light vector with the normal vector to get the amount of light hitting the surface.</p>
+<p>First we need a direction vector for our light, and then we take the dot product of the light vector with the normal vector to get the amount of light hitting the surface.</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">float3</span> <span class="n">lightDir</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span> <span class="n">float3</span><span class="p">(</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">0</span><span class="p">.</span><span class="mi">3</span> <span class="p">));</span>
 
@@ -317,7 +317,7 @@
 
 <p>You should now have a nice shiny sphere, like so:</p>
 
-<p><img src="/assets/imgs/RaymarchingUnreal/shaded-sphere.png" alt="Raymarched Sphere" /></p>
+<p><img src="/assets/imgs/raymarching-unreal/shaded-sphere.png" alt="Raymarched Sphere" /></p>
 
 <p>Now that we have a functional raymarcher we should take advantage of it. We can do a lot more than render a sphere. For starters let’s blend between two different shapes. You can find the SDFs for more shapes on <a href="https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm">Inigo Quilez’s website</a>. I am using a sphere and a bounding box. Add these functions to your <code class="language-plaintext highlighter-rouge">Global Function</code> node and then you can blend between them in your scene SDF.</p>
 
@@ -379,7 +379,7 @@
 
 <p>You should also probably reduce <code class="language-plaintext highlighter-rouge">MAX_STEPS</code> or <code class="language-plaintext highlighter-rouge">EPSILON</code> to improve performance, and the Mandelbulb will initially be too small in Unreal units, so I recommend dividing the <code class="language-plaintext highlighter-rouge">Camera Position</code> and <code class="language-plaintext highlighter-rouge">Local Position</code> nodes by <code class="language-plaintext highlighter-rouge">40</code>, to increase the scale of the fractal. Like this:</p>
 
-<p><img src="/assets/imgs/RaymarchingUnreal/fractal-nodes.png" alt="Fractal node setup" /></p>
+<p><img src="/assets/imgs/raymarching-unreal/fractal-nodes.png" alt="Fractal node setup" /></p>
 
 <p>Right now we’re just coloring the fractal as if it were a lit surface, however there are lots of interesting ways to color a fractal, but I will leave it up to you to investigate that further.</p>
 
@@ -389,7 +389,7 @@
 
 <h2 id="further-readings">Further Readings</h2>
 
-<p>This is only the simplest implementation of raymarching and there are many more beautiful effects that you can achieve.  I highly recommend you look at Inigo Quilez’s site, it is a treasure trove on interesting raymarching applications: https://www.iquilezles.org/www/index.htm</p>
+<p>This is only the simplest implementation of raymarching and there are many more beautiful effects that you can achieve. I highly recommend you look at Inigo Quilez’s site, it is a treasure trove of interesting raymarching applications: <a href="https://www.iquilezles.org/www/index.htm">https://www.iquilezles.org/www/index.htm</a></p>
 
 <p>If you make something cool using raymarching in Unreal please send it to me!</p>
 
