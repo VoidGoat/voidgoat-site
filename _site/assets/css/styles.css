@@ -1,32 +1,43 @@
+:root { --accent: #ff5722; --background: #14213D; --highlight: #7E5C82; --accent: #613466; --base: #F6EEF2; }
+
+/* Main Styles
+*/
 html { height: 100%; }
 
-body { margin: 0; height: inherit; font-family: 'Mulish', sans-serif; font-weight: 400; font-style: normal; color: #333333; }
+body { margin: 0; height: inherit; font-family: 'Mulish', sans-serif; font-weight: 400; font-style: normal; color: var(--base); background-color: var(--background); }
+
+hr { border: 1px solid var(--base); }
 
 .container { margin: 0; height: 100%; }
 
-.content { max-width: 1000px; width: 94%; margin: auto; background-color: white; height: auto; padding: 0 3vw 0 3vw; }
+.container img { width: 100%; }
 
+.content { max-width: 1000px; width: 94%; margin: auto; color: var(--base); background-color: var(--background); height: auto; padding: 0 3vw 0 3vw; }
+
+/*
+---NAVIGATION---
+*/
 .nav-header { display: flex; height: 15px; padding-top: 30px; padding-bottom: 8px; margin-bottom: 50px; }
 
-.nav-logo { position: absolute; font-family: 'Monoton', cursive; font-size: 35px; top: 18px; padding-left: 10px; text-decoration: none; color: #333333; transition: color 0.2s; }
+.nav-logo { position: absolute; font-family: 'Monoton', cursive; font-size: 35px; top: 18px; padding-left: 10px; text-decoration: none; color: var(--base); transition: color 0.2s; }
 
-.nav-logo:hover { color: #2196f3; }
+.nav-logo:hover { color: var(--highlight); }
 
 .nav-center { margin: 0 auto; }
 
-.nav-center a { color: #333333; font-size: 20px; font-weight: bold; margin: 4px 20px 0px 40px; text-decoration: none; }
+.nav-center a { color: var(--base); font-size: 20px; font-weight: bold; margin: 4px 20px 0px 40px; text-decoration: none; }
 
-.nav-center a:hover { border-bottom: 4px solid #333333; }
+.nav-center a:hover { border-bottom: 4px solid var(--base); }
 
-.current { color: #2196f3 !important; border-bottom: 4px solid #2196f3 !important; padding-bottom: 0 !important; }
+.current { color: var(--highlight) !important; border-bottom: 4px solid var(--highlight) !important; padding-bottom: 0 !important; }
 
 #hamburger { font-size: 30px !important; width: 30px; position: fixed; top: 20px; margin-right: 20px; cursor: pointer; z-index: 3; display: none; }
 
-#side-menu { position: fixed; background: white; box-shadow: -5px 0 5px #bababa; top: 0; bottom: 0; right: -505px; max-width: 500px; z-index: 2; width: 100%; padding-top: 40px; }
+#side-menu { position: fixed; background: var(--background); box-shadow: -5px 0 5px var(--highlight); top: 0; bottom: 0; right: -505px; max-width: 500px; z-index: 2; width: 100%; padding-top: 40px; }
 
-#side-menu a { display: block; color: #333333; font-size: 30px; font-weight: bold; margin: 4px 20px 0px 40px; text-decoration: none; padding-bottom: 4px; }
+#side-menu a { display: block; color: var(--base); font-size: 30px; font-weight: bold; margin: 4px 20px 0px 40px; text-decoration: none; padding-bottom: 4px; }
 
-#side-menu a:hover { border-bottom: 4px solid #333333; padding-bottom: 0 !important; }
+#side-menu a:hover { border-bottom: 4px solid var(--base); padding-bottom: 0 !important; }
 
 @keyframes slide-in { from { right: -505px; }
   to { right: 0; } }
@@ -38,10 +49,12 @@ body { margin: 0; height: inherit; font-family: 'Mulish', sans-serif; font-weigh
 
 .socials { right: 10px; }
 
+.fa { color: var(--base); }
+
 @media only screen and (max-width: 900px) { .nav-center { display: none; }
   .socials { display: none; }
   #hamburger { display: block; } }
-.blog-link-full { color: #333333; text-decoration: none; border: 1px solid #d8d8d8; overflow: hidden; width: 100%; max-width: 480px; margin: 5px; border-radius: 10px; position: relative; }
+.blog-link-full { color: var(--base); background-color: var(--highlight); text-decoration: none; border: 1px solid var(--base); overflow: hidden; width: 100%; max-width: 480px; margin: 5px; border-radius: 10px; position: relative; }
 
 .blog-link-full img { width: 100%; max-height: 340px; }
 
@@ -49,15 +62,9 @@ body { margin: 0; height: inherit; font-family: 'Mulish', sans-serif; font-weigh
 
 .corner-button { position: absolute; bottom: 20px; right: 20px; }
 
-.round-button { background-color: #ff5722; color: white; padding: 10px; font-weight: bold; border-radius: 100px; transition: background-color 0.2s; }
+.round-button { background-color: var(--accent); color: white; padding: 10px; font-weight: bold; border-radius: 100px; transition: background-color 0.2s; }
 
-.round-button:hover { background-color: #a23613; }
-
-.highlight { margin: 10px; padding: 10px; border-radius: 10px; }
-
-hr { border: 1px solid #eee; }
-
-img { width: 100%; }
+.round-button:hover { opacity: 0.7; }
 
 .fa-bubble { padding: 10px; font-size: 25px; width: 25px; text-align: center; text-decoration: none; border-radius: 50%; }
 
@@ -65,13 +72,9 @@ img { width: 100%; }
 
 .fa-facebook { color: #3B5998; }
 
-.fa-twitter { color: black; }
-
 .fa-google { color: #dd4b39; }
 
 .fa-linkedin { color: #007bb5; }
-
-.fa-youtube-play { color: black; }
 
 .fa-instagram { color: #125688; }
 
@@ -104,6 +107,10 @@ img { width: 100%; }
 .fa-reddit { color: #ff5700; }
 
 .fa-rss { color: #ff6600; }
+
+.markdown-body iframe { max-width: 100%; }
+
+.markdown-body { background-color: white; padding: 1rem; }
 
 .markdown-body .octicon { display: inline-block; fill: currentColor; vertical-align: text-bottom; }
 

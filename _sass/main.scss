@@ -1,5 +1,50 @@
 
 
+
+:root {
+  --accent: #ff5722;
+
+  // --highlight: #2196f3;
+  // --background: #ffffff;
+  // --base: rgb(51, 51, 51);
+
+  // --highlight: #fca311;
+  // --background: #14213d;
+  // --base: #fff;
+
+  // #e5e5e5 #000
+
+  // --highlight: #ee6c4d;
+  // --background: #293241;
+  // --base: #e0fbfc;
+  // #e0fbfc #98c1d9 #3d5a80 #ee6c4d #293241
+
+  // --highlight: #f07167;
+  // --background: #0081a7;
+  // --base: white;
+
+  // --background: #606c38;
+  // --highlight: #dda15e;
+  // --base: #fefae0;
+
+  --background: #14213D;
+  --highlight: #7E5C82;
+  --accent: #613466;
+  --base: #F6EEF2;
+
+  // --background: #07689f;
+  // --accent: #ff7e67;
+  // --highlight: #a2d5f2;
+  // --base: #fafafa;
+
+  
+}
+
+
+/*
+  Main Styles
+*/
+
 html {
   height: 100%;
 }
@@ -12,7 +57,12 @@ body {
   font-family: 'Mulish', sans-serif;
   font-weight: 400;
   font-style: normal;
-  color: rgb(51, 51, 51);
+  color: var(--base);
+  background-color: var(--background);
+}
+
+hr {
+  border: 1px solid var(--base);
 }
 
 .container {
@@ -21,14 +71,27 @@ body {
   height:100%;
 }
 
+.container img {
+  width: 100%;
+}
+
 .content {
   max-width: 1000px;
   width:94%;
   margin: auto;
-  background-color: white;
+
+  color: var(--base);
+  background-color: var(--background);
+
   height:auto;
   padding: 0 3vw 0 3vw;
 }
+
+
+
+/*
+---NAVIGATION---
+*/
 
 .nav-header {
   display:  flex;
@@ -55,7 +118,7 @@ body {
   padding-left: 10px;
 
   text-decoration: none;
-  color: rgb(51, 51, 51);
+  color: var(--base);
 
   transition: color 0.2s;
 }
@@ -63,7 +126,7 @@ body {
 
 
 .nav-logo:hover {
-  color: #2196f3;
+  color: var(--highlight);
 }
 
 
@@ -74,7 +137,7 @@ body {
   // justify-content: center;
 }
 .nav-center a {
-  color: rgb(51, 51, 51);
+  color: var(--base);
   // color: white;
 
   font-size: 20px;
@@ -87,16 +150,19 @@ body {
 .nav-center a:hover {
   // color: rgb(51, 51, 51) !important;
   // color:  #2196f3 !important;
-  border-bottom: 4px solid rgb(51, 51, 51) ;
+  border-bottom: 4px solid var(--base);
   // padding-bottom: 5px !important;
 
 }
 
 .current {
-  color:  #2196f3 !important;
-  border-bottom: 4px solid #2196f3 !important;
+  color:  var(--highlight) !important;
+  border-bottom: 4px solid var(--highlight) !important;
   padding-bottom: 0 !important;
 }
+
+
+
 
 #hamburger {
   font-size: 30px !important;
@@ -114,8 +180,8 @@ body {
   // display: none;
 
   position: fixed;
-  background: white;
-  box-shadow: -5px 0 5px rgb(186, 186, 186);
+  background: var(--background);
+  box-shadow: -5px 0 5px var(--highlight);
   // background: rgb(218, 218, 218);
   top: 0;
   bottom: 0;
@@ -131,7 +197,7 @@ body {
 #side-menu a {
   display: block;
 
-  color: rgb(51, 51, 51);
+  color: var(--base);
   // color: white;
 
   font-size: 30px;
@@ -145,11 +211,14 @@ body {
 #side-menu a:hover {
   // color: rgb(51, 51, 51) !important;
   // color:  #2196f3 !important;
-  border-bottom: 4px solid rgb(51, 51, 51) ;
+  border-bottom: 4px solid var(--base);
   padding-bottom: 0 !important;
 
 }
 
+
+
+// Side menu animation
 @keyframes slide-in {
   from {right: -505px;}
   to {right: 0;}
@@ -178,6 +247,13 @@ body {
 .socials {
   right: 10px;
 }
+
+.fa {
+  color: var(--base); 
+}
+
+
+// Switch to hamburger menu when screen is small
 @media only screen and (max-width: 900px) {
   .nav-center {
     display: none;
@@ -209,12 +285,11 @@ body {
 // }
 
 .blog-link-full {
-  color: rgb(51, 51, 51);
+  color: var(--base);
+  background-color: var(--highlight);
   text-decoration: none;
 
-  border: 1px solid #d8d8d8;
-  // border-top: 1px solid #d8d8d8;
-  // border-bottom: 2px solid #d8d8d8;
+  border: 1px solid var(--base);
 
   overflow: hidden;
 
@@ -254,7 +329,7 @@ body {
 }
 
 .round-button {
-  background-color: #ff5722;
+  background-color: var(--accent);
   color: white;
   padding: 10px;
   font-weight: bold;
@@ -264,26 +339,17 @@ body {
 }
 
 .round-button:hover {
-  background-color: #a23613;
-
+  opacity: 0.7;
 }
 
-.highlight {
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
-}
+// .highlight {
+//   margin: 10px;
+//   padding: 10px;
+//   border-radius: 10px;
+// }
 
 
-hr {
-  // color: rgb(254,254,254);
 
-  border: 1px solid #eee;
-}
-
-img {
-  width: 100%;
-}
 
 // .content blockquote {
 //   margin: 0;
