@@ -1,6 +1,3 @@
-
-
-
 :root {
   --accent: #ff5722;
 
@@ -76,7 +73,7 @@ hr {
 }
 
 .content {
-  max-width: 1000px;
+  max-width: 80rem;
   width:94%;
   margin: auto;
 
@@ -284,35 +281,27 @@ hr {
 //   }
 // }
 
-.blog-link-full {
+
+.blog-link {
   color: var(--base);
   background-color: var(--highlight);
   text-decoration: none;
-
   border: 1px solid var(--base);
-
+  
   overflow: hidden;
-
-  width: 100%;
-
-  max-width: 480px;
-
   margin: 5px;
-
-  border-radius: 10px;
-
   position: relative;
 
 }
 
-.blog-link-full img {
+.blog-link img {
   // object-fit: fill;
   // display: block;
   // float: left;
   width: 100%;
   max-height: 340px;
 }
-.blog-link-full section {
+.blog-link section {
   // display: block;
    // width: 45%;
    width: auto;
@@ -320,6 +309,41 @@ hr {
    padding: 10px;
 }
 
+.blog-link-card {
+  width: 100%;
+  max-width: 440px;
+  border-radius: 10px;
+}
+
+
+// Wide blog link style
+.blog-link-wide {
+  width: 100%;
+  
+  border-radius: 10px;
+  display: inline;
+}
+
+.blog-link-wide img {
+  width: 40%;
+  // height: auto;
+  margin: 0;
+
+}
+
+.blog-link-wide section {
+  width: 45%;
+
+  vertical-align: top;
+
+  display: inline-block;
+   // width: 45%;
+
+  //  width: auto;
+  margin:0;
+  //  height: auto;
+   padding: 10px;
+}
 
 
 .corner-button {

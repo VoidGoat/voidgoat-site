@@ -12,7 +12,7 @@ hr { border: 1px solid var(--base); }
 
 .container img { width: 100%; }
 
-.content { max-width: 1000px; width: 94%; margin: auto; color: var(--base); background-color: var(--background); height: auto; padding: 0 3vw 0 3vw; }
+.content { max-width: 80rem; width: 94%; margin: auto; color: var(--base); background-color: var(--background); height: auto; padding: 0 3vw 0 3vw; }
 
 /*
 ---NAVIGATION---
@@ -54,11 +54,19 @@ hr { border: 1px solid var(--base); }
 @media only screen and (max-width: 900px) { .nav-center { display: none; }
   .socials { display: none; }
   #hamburger { display: block; } }
-.blog-link-full { color: var(--base); background-color: var(--highlight); text-decoration: none; border: 1px solid var(--base); overflow: hidden; width: 100%; max-width: 480px; margin: 5px; border-radius: 10px; position: relative; }
+.blog-link { color: var(--base); background-color: var(--highlight); text-decoration: none; border: 1px solid var(--base); overflow: hidden; margin: 5px; position: relative; }
 
-.blog-link-full img { width: 100%; max-height: 340px; }
+.blog-link img { width: 100%; max-height: 340px; }
 
-.blog-link-full section { width: auto; height: 200px; padding: 10px; }
+.blog-link section { width: auto; height: 200px; padding: 10px; }
+
+.blog-link-card { width: 100%; max-width: 440px; border-radius: 10px; }
+
+.blog-link-wide { width: 100%; border-radius: 10px; display: inline; }
+
+.blog-link-wide img { width: 40%; margin: 0; }
+
+.blog-link-wide section { width: 45%; vertical-align: top; display: inline-block; margin: 0; padding: 10px; }
 
 .corner-button { position: absolute; bottom: 20px; right: 20px; }
 

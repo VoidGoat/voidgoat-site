@@ -19,7 +19,7 @@ permalink: /blog
   {% assign sortedBlogs = site.blogs | reverse %}
   {% for blog in sortedBlogs %}
   <!-- <a href=" {{blog.url | relative_url }}" style="display: inline-flex; margin:auto; width: 100%; max-width: 490px; text-decoration:none;"> -->
-    <a href=" {{blog.url | relative_url }}" class="blog-link-full">
+    <a href=" {{blog.url | relative_url }}" class="blog-link blog-link-card">
       {% assign imgPath = blog.id | split: '/' | last%}
       <img src="{{ "assets/imgs/" | relative_url  | append: imgPath | append: "/thumbnail.png" }}" alt="{{blog.title}} thumbnail">
       <section>
