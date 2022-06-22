@@ -1,3 +1,5 @@
 
 vendor/
 .bundle/
+*/.DS_Store
+assets/imgs/.DS_Store
