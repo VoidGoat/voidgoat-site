@@ -1,23 +1,49 @@
-<nav class="nav-header">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>First Post</title>
+
+  <link rel="stylesheet" href= /assets/css/styles.css>
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Mulish:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+  <div class="container">
+
+  <nav class="nav-header">
 
 
-    <a href={{"/" | relative_url }} class="nav-logo big-logo-text">
+    <a href=/ class="nav-logo big-logo-text">
         Void Goat
     </a>
 
     <div class="nav-center">
 
-        {% for item in site.data.navigation %}
-        <a href="{{ item.link | relative_url }}" class="{% if page.url == item.link %} current {% endif%} ">
-            {{item.name}}
+        
+        <a href="/about" class=" ">
+            About
         </a>
-        {% endfor %}
+        
+        <a href="/blog" class=" ">
+            Blog
+        </a>
+        
+        <a href="/portfolio" class=" ">
+            Portfolio
+        </a>
+        
     </div>
 
 
 
     <div class="nav-logo socials">
-        <a class="nav-text" href="{{ '/newsletter' | relative_url }}">Get my newsletter<span
+        <a class="nav-text" href="/newsletter">Get my newsletter<span
                 class="fa fa-bubble fa-envelope"></span></a>
 
         <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
@@ -41,11 +67,19 @@
 <!-- <hr> -->
 
 <div id="side-menu">
-    {% for item in site.data.navigation %}
-    <a href="{{ item.link | relative_url }}" class="{% if page.url == item.link %} current {% endif%} ">
-        {{item.name}}
+    
+    <a href="/about" class=" ">
+        About
     </a>
-    {% endfor %}
+    
+    <a href="/blog" class=" ">
+        Blog
+    </a>
+    
+    <a href="/portfolio" class=" ">
+        Portfolio
+    </a>
+    
 
 
     <!-- <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
@@ -90,3 +124,10 @@
     }
 
 </script>
+  <div class="content">
+    <p>This is my first POST <em>woo hoo</em></p>
+
+  </div>
+</div>
+</body>
+</html>

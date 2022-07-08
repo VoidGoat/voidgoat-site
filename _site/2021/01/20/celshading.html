@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>About</title>
+  <title>Toon Shading</title>
 
   <link rel="stylesheet" href= /assets/css/styles.css>
   <!-- <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap" rel="stylesheet"> -->
@@ -26,7 +26,7 @@
     <div class="nav-center">
 
         
-        <a href="/about" class=" current  ">
+        <a href="/about" class=" ">
             About
         </a>
         
@@ -68,7 +68,7 @@
 
 <div id="side-menu">
     
-    <a href="/about" class=" current  ">
+    <a href="/about" class=" ">
         About
     </a>
     
@@ -125,16 +125,21 @@
 
 </script>
   <div class="content">
-    <h1 id="about">About</h1>
-<hr />
-<p>I am a game developer who likes to experiment with different graphical styles. I have been making games for 7 years and primarily use Unreal Engine and Godot Engine.</p>
+    
+<p>Toon shading or cel shading can give 3D objects a striking stylized look. In order to implement toon shading we will be using a custom light shader. In order to create a toon shading model we need to understand how to create basic realistic shading model. To calculate lighting for any particular pixel we need two vectors. The normal vector which points perpendicular to the objects surface at the given pixel, and the light vector which points from the surface to light source. The surface should be most bright when the normal vector and light vector are pointing in the same direction, that is when the surface is facing the light. The surface should be darkest when the normal vector is pointing away from the light vector. To get a value describing whether the two vectors are pointing more in the same direction or more in opposite directions we can use the dot product.</p>
 
-<p>You can follow my work on twitter: <a href="https://twitter.com/VoidGoatDev">https://twitter.com/VoidGoatDev</a></p>
+<p>The shaders I am writing are in the Godot Engine, but the same principles apply to any 3D Rendering engine.</p>
 
-<p>Subscribe to my mailing list to get updates about my games and projects: <a href="/newsletter">Mailing List</a></p>
+<p>This gives us the simplest implementation of a traditional shading model:</p>
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">light</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">brightness</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">LIGHT</span><span class="p">,</span> <span class="n">NORMAL</span><span class="p">);</span>
 
-<p>You can contact me at: voidgoat (-at-) gmail (-dot-) com</p>
+    <span class="c1">// DIFFUSE_LIGHTING is the return value of this function</span>
+    <span class="n">DIFFUSE_LIGHTING</span> <span class="o">+=</span> <span class="n">vec3</span><span class="p">(</span><span class="n">brightness</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
 
+<p>To turn this into toon lighting we need to discretize the output so we get distinct areas bands of shadow and light rather than a smooth gradient.</p>
 
   </div>
 </div>

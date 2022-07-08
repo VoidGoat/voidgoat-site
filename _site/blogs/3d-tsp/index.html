@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>3D Traveling Salesman Art</title>
+
+  <link rel="stylesheet" href= /assets/css/styles.css>
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Mulish:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+  <div class="container">
+
+  <nav class="nav-header">
+
+
+    <a href=/ class="nav-logo big-logo-text">
+        Void Goat
+    </a>
+
+    <div class="nav-center">
+
+        
+        <a href="/about" class=" ">
+            About
+        </a>
+        
+        <a href="/blog" class=" ">
+            Blog
+        </a>
+        
+        <a href="/portfolio" class=" ">
+            Portfolio
+        </a>
+        
+    </div>
+
+
+
+    <div class="nav-logo socials">
+        <a class="nav-text" href="/newsletter">Get my newsletter<span
+                class="fa fa-bubble fa-envelope"></span></a>
+
+        <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
+
+        <a href="https://www.youtube.com/channel/UChRfQHdCl297MMJ3ScObGeg" class="fa fa-youtube-play"></a>
+        <!-- <a href="#" class="fa fa-reddit"></a> -->
+    </div>
+
+
+    <div id="hamburger" style="right:0;">
+        <div id="hamburger-icon" onclick="toggleMenu()" class="fa fa-bars"></div>
+        <!-- <a href="#" class="fa fa-youtube-play"></a>
+  <a href="#" class="fa fa-reddit"></a> -->
+    </div>
+
+</nav>
+<!-- <br> -->
+
+
+
+<!-- <hr> -->
+
+<div id="side-menu">
+    
+    <a href="/about" class=" ">
+        About
+    </a>
+    
+    <a href="/blog" class=" ">
+        Blog
+    </a>
+    
+    <a href="/portfolio" class=" ">
+        Portfolio
+    </a>
+    
+
+
+    <!-- <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
+    <a href="https://www.youtube.com/channel/UChRfQHdCl297MMJ3ScObGeg" class="fa fa-youtube-play"></a> -->
+</div>
+
+<script type="text/javascript">
+    var menuVisible = false;
+
+    function toggleMenu() {
+        var menu = document.getElementById('side-menu');
+        var hamburger = document.getElementById("hamburger-icon");
+        if (menuVisible) {
+            menu.classList.remove("slide-in");
+            menu.classList.remove("slide-out");
+
+            void menu.offsetWidth;
+
+            menu.classList.add("slide-out");
+            menu.style.animationPlayState = 'running';
+
+
+            hamburger.classList.add("fa-bars");
+            hamburger.classList.remove("fa-close");
+
+            menuVisible = false;
+        } else {
+
+            menu.classList.remove("slide-in");
+            menu.classList.remove("slide-out");
+
+            void menu.offsetWidth;
+
+            menu.classList.add("slide-in");
+            menu.style.animationPlayState = 'running';
+
+            hamburger.classList.remove("fa-bars");
+            hamburger.classList.add("fa-times");
+
+            menuVisible = true;
+        }
+    }
+
+</script>
+  <div class="content">
+    <!-- 
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+    type="text/javascript"></script> -->
+
+<script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
+
+
+<h1>3D Traveling Salesman Art</h1>
+
+
+<img src="/assets/imgs/3d-tsp/header.jpg"
+    alt="3D Traveling Salesman Art header image">
+
+<p>
+    07 Jul 2022
+
+    <hr>
+</p>
+<div class="markdown-body">
+
+    
+<p>I recently had the idea of making traveling salesperson problem art in 3D. Typically, TSP art is made by taking a 2D image, distributing points on the image so that there are more points where the image is darker, and then trying to solve the traveling salesperson problem on that set of points. This creates some very interesting “connect-the-dots” style artwork. I thought that instead of using 2D points based on an image, it would be interesting to use points in 3D space based on a 3D mesh.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/assets/imgs/3d-tsp/hands-tsp.png" alt="Hands TSP ART" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>An example of TSP Art by Robert Bosch based on the Creation of Adam by Michelangelo. More examples can be found <a href="https://www2.oberlin.edu/math/faculty/bosch/tspart-page.html">here</a>.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="what-it-is">What It Is</h2>
+
+<p>The traveling salesperson problem is a mathematical optimization problem where you have a set of locations that a traveling salesperson needs to visit and you want to find the shortest route that includes all locations and returns the salesperson to their starting point.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/assets/imgs/3d-tsp/tsp-explainer.png" alt="TSP visual explanation" class="table-img" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>Randomly visiting points results in a very long route, but we can use a variety of algorithms to find more efficient routes.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="how-i-started">How I Started</h2>
+
+<p>To start implementing the idea, I used Blender so that I could easily create and modify 3D meshes and visualize the result of my algorithm in visually pleasing ways. Blender allows for Python scripting, so that is how I chose to implement my algorithm.</p>
+
+<p>One of the troubles with creating TSP art is that the traveling salesperson problem is NP-Hard, meaning that, as far as humanity is aware, the only way to find the optimal route for the salesman is to check every possible option. However, the number of options grows at the rate of <script type="math/tex">!(n-1)</script>, so when you have 6 points to visit there are 120 options, not too bad, but when there are just 32 points to visit there are 8,222,838,654,177,922,817,725,562,880,000,000 options, making it essentially impossible to check them all and find the best solution. I want my algorithm to work on meshes with at least hundreds of points and ideally run in a few seconds rather than quadrillions of years, so the solution is to use heuristic algorithms that find solutions that are <em>pretty</em> good, but not perfectly optimal. This will work fine since we are trying to generate some artwork, so the most important thing is the circuitous look of the path, rather than whether it is actually the most efficient. So the question is, which heuristic algorithm to use?</p>
+
+<h2 id="genetic-algorithm-shmenetic-shmalgorithm">Genetic Algorithm, Shmenetic Shmalgorithm</h2>
+
+<p>Initially, after doing very little research, I was inspired by <a href="https://crescointl.com/using-a-genetic-algorithm-for-traveling-salesman-problem-in-python/">this post</a> to use a genetic algorithm to solve the TSP. I adapted their code to 3D, (fixed some of the bugs) and then used the output to generate a network of edges based on a 3D mesh from Blender. The results were somewhat encouraging, but also disappointing. Running the algorithm on a simple, low-poly sphere yielded some interesting results, but the algorithm ran quite slowly and for more complex meshes did not find good solutions in a reasonable amount of time. It was exciting to see that solving the TSP in 3D yielded some interesting results, but I needed a better approach. Time to do some actual research.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><video autoplay="" loop="" muted="" playsinline=""><source src="/assets/imgs/3d-tsp/genetic_tsp_result.mp4" type="video/mp4" /></video></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>The result of my experiments using a genetic algorithm. This is clearly not a great result, since you can see the path crossing over itself.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>I don’t think using a genetic algorithm is necessarily a bad approach but it requires a lot of fine tuning of parameters to get a good result in a reasonable amount of time and I wanted to investigate some other methods.</p>
+
+<h2 id="better-art-or-better-algorithm">Better Art or Better Algorithm?</h2>
+
+<p>After looking at some more advanced methods for solving TSP, I began to wonder whether that was the right approach at all. My goal was to make an interesting looking artwork and not to actually create a perfectly optimized path. This lead me to pursue algorithms that would produce a good look, rather than a better solution to the mathematical problem.</p>
+
+<p>My first idea was to use the 2-Opt algorithm, which is one of the simplest ways to solve TSP. The 2-Opt algorithm starts with a random path and then iteratively looks at two points and the next points in the path and checks if swapping their end points would result in a shorter overall path. If the new path is shorter, then the edges are swapped. So if we have a path called <script type="math/tex">p</script>, then the algorithm looks at points <script type="math/tex">p[x]</script> and <script type="math/tex">p[y]</script> where <script type="math/tex">p[x] → p[x+1]</script> and <script type="math/tex">p[y] → p[y+1]</script>, then the algorithm checks if the connections <script type="math/tex">p[x] → p[y]</script> and <script type="math/tex">p[x+1] → p[y+1]</script> would result in a shorter path. This process is repeated over and over until no improvement can be made. This is not actually a very effective solver for TSP since it almost always gets stuck in a local minima that it can never get out of. But it does produce a path that “looks” relatively nice. In 2D, the 2-Opt algorithm guarantees that no edges will cross, which results in one continuous line that you can easily follow with your eye. In 3D, it’s a little more complicated, but it yields a similarly neat result.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><video autoplay="" loop="" muted="" playsinline=""><source src="/assets/imgs/3d-tsp/twoopt-tsp-result.mp4" type="video/mp4" /></video></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>The result of using the 2-Opt algorithm on an icosphere. This is a much better result than the genetic algorithm and you can see there are no obviously inefficient parts of the path.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>My initial implementation of 2-Opt was quite slow for larger meshes. My first run on a mesh with 500 vertices took an hour and forty minutes to run, so some optimizations were definitely necessary.</p>
+
+<h3 id="memoization-optimization">Memoization Optimization</h3>
+
+<p>One of the best optimizations was caching all the distances between the points in a 2D array. The distances between points are constantly being compared, so not having to recalculate the distance saves a lot of time. Since the distance between points is always the same, they can just be looked up instead of being recalculated all the time.</p>
+
+<p>Getting to a local minima solution where no improvements could be made for an Icosphere with 162 vertices took 2m19s without memoization and took about 16s with memoization. Definitely a big improvement.</p>
+
+<h3 id="route-comparison-optimization">Route Comparison Optimization</h3>
+
+<p>There was another optimization that I initially ignored, but would make it much faster. I was previously calculating the length of the whole route to see if swapping the edges was an improvement. But in theory you only need to compare the edges being swapped and not the whole path which takes our distance calculation from <script type="math/tex">O(n)</script> to <script type="math/tex">O(1)</script> (explained here: <a href="https://en.wikipedia.org/wiki/2-opt#Efficient_Implementation">https://en.wikipedia.org/wiki/2-opt#Efficient_Implementation</a>).  I couldn’t get this to work originally, because I was being stupid and was iterating over the points in their original order rather than in the order of the current route. But after implementing it, the Icosphere test dropped down from 16s to 4s. While memoization was just taking a constant time operation and making it faster, this change takes a linear time operation and makes it constant time, so for larger routes it should have an even bigger impact.</p>
+
+<p>I am only trying to use this algorithm to generate a mesh that will be rendered later, so it does not need to run in real-time and these improvements are good enough.</p>
+
+<h2 id="making-it-pretty">Making it Pretty</h2>
+
+<p>Since I implemented this algorithm in Blender, there are a lot of possibilities for how to render and visualize the data. I used Geometry Nodes to give the path some thickness and smoothed it out a little bit. I then experimented with different ways to show the path using Geometry Nodes and Shader Nodes.</p>
+
+<h2 id="results">Results</h2>
+
+<p>After my Python script generates the basic mesh, I can use Blender’s Geometry Nodes to solidify it and give it some interesting animations. Then the result can be rendered out. Here is a video of some of my final results:</p>
+
+<iframe style="display: block; margin: auto;" width="560" height="315" src="https://www.youtube.com/embed/kvfetSDl8io" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+
+<p>Here are some still renders of some objects:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/assets/imgs/3d-tsp/teapot-tsp-still.png" alt="Teapot TSP art" class="table-img" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>It took about 18 min to calculate the route for this teapot with 821 vertices.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/assets/imgs/3d-tsp/human-tsp-still.png" alt="Human TSP art" class="table-img" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>An efficient route around the complexities of humanity.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/assets/imgs/3d-tsp/suzanne-tsp-still.png" alt="Suzanne Monkey TSP art" class="table-img" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>You can’t use Blender without using Suzanne in your results.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center"><img src="/assets/imgs/3d-tsp/2d-tsp.png" alt="2D Grid TSP Art" class="table-img" /></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><em>You can also still get some interesting results in 2D.</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Overall I am quite happy with how it turned out and I think there are a lot of interesting areas to explore. If you make any 3D TSP art, I would love to see it. The code for this project and an example blend file are available on GitHub here: <a href="https://github.com/VoidGoat/blender-3d-tsp-article">https://github.com/VoidGoat/blender-3d-tsp-article</a>.</p>
+
+<p>If you ever find yourself as a traveling salesperson underwater or in outer space, then perhaps these 3D algorithms and visualizations will help.</p>
+
+<h2 id="recommended-reading">Recommended Reading:</h2>
+
+<ul>
+  <li><a href="https://press.princeton.edu/books/hardcover/9780691164069/opt-art">Opt Art by Robert Bosch</a>. Bosch started the idea of TSP art and his book goes into many other methods of creating art using optimization algorithms.</li>
+  <li><a href="https://www2.oberlin.edu/math/faculty/bosch/tspart-page.html">More 2D TSP Art by Robert Bosch</a>. Here you can see more traditional TSP art.</li>
+  <li><a href="https://en.wikipedia.org/wiki/2-opt">https://en.wikipedia.org/wiki/2-opt</a></li>
+</ul>
+
+<hr />
+
+<p>You can subscribe to my newsletter to be notified when I release new articles and projects:</p>
+
+<p><a class="mail-widget" href="/newsletter">Get my newsletter<span class="fa fa-bubble fa-envelope"></span></a></p>
+
+<p>Or follow me on twitter:</p>
+
+<p><a href="https://twitter.com/VoidGoatDev?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-size="large" data-show-count="false">Follow @VoidGoatDev</a><script async="" src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>3D Slime Mold Simulation</title>
+
+  <link rel="stylesheet" href= /assets/css/styles.css>
+  <!-- <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap" rel="stylesheet"> -->
+  <link href="https://fonts.googleapis.com/css2?family=Monoton&family=Mulish:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+  <div class="container">
+
+  <nav class="nav-header">
+
+
+    <a href=/ class="nav-logo big-logo-text">
+        Void Goat
+    </a>
+
+    <div class="nav-center">
+
+        
+        <a href="/about" class=" ">
+            About
+        </a>
+        
+        <a href="/blog" class=" ">
+            Blog
+        </a>
+        
+        <a href="/portfolio" class=" ">
+            Portfolio
+        </a>
+        
+    </div>
+
+
+
+    <div class="nav-logo socials">
+        <a class="nav-text" href="/newsletter">Get my newsletter<span
+                class="fa fa-bubble fa-envelope"></span></a>
+
+        <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
+
+        <a href="https://www.youtube.com/channel/UChRfQHdCl297MMJ3ScObGeg" class="fa fa-youtube-play"></a>
+        <!-- <a href="#" class="fa fa-reddit"></a> -->
+    </div>
+
+
+    <div id="hamburger" style="right:0;">
+        <div id="hamburger-icon" onclick="toggleMenu()" class="fa fa-bars"></div>
+        <!-- <a href="#" class="fa fa-youtube-play"></a>
+  <a href="#" class="fa fa-reddit"></a> -->
+    </div>
+
+</nav>
+<!-- <br> -->
+
+
+
+<!-- <hr> -->
+
+<div id="side-menu">
+    
+    <a href="/about" class=" ">
+        About
+    </a>
+    
+    <a href="/blog" class=" ">
+        Blog
+    </a>
+    
+    <a href="/portfolio" class=" ">
+        Portfolio
+    </a>
+    
+
+
+    <!-- <a href="https://twitter.com/VoidGoatDev" class="fa fa-bubble fa-twitter"></a>
+    <a href="https://www.youtube.com/channel/UChRfQHdCl297MMJ3ScObGeg" class="fa fa-youtube-play"></a> -->
+</div>
+
+<script type="text/javascript">
+    var menuVisible = false;
+
+    function toggleMenu() {
+        var menu = document.getElementById('side-menu');
+        var hamburger = document.getElementById("hamburger-icon");
+        if (menuVisible) {
+            menu.classList.remove("slide-in");
+            menu.classList.remove("slide-out");
+
+            void menu.offsetWidth;
+
+            menu.classList.add("slide-out");
+            menu.style.animationPlayState = 'running';
+
+
+            hamburger.classList.add("fa-bars");
+            hamburger.classList.remove("fa-close");
+
+            menuVisible = false;
+        } else {
+
+            menu.classList.remove("slide-in");
+            menu.classList.remove("slide-out");
+
+            void menu.offsetWidth;
+
+            menu.classList.add("slide-in");
+            menu.style.animationPlayState = 'running';
+
+            hamburger.classList.remove("fa-bars");
+            hamburger.classList.add("fa-times");
+
+            menuVisible = true;
+        }
+    }
+
+</script>
+  <div class="content">
+    <p>Slime mold simulation is an intersting topic which is best explained here: https://sagejenson.com/physarum. Essentially you simulate many particles moving in a 2D plane, the particles leave a trail of goop behind it and at each stage of the simulation the particles try to move in the direction of maximum goop. This causes the particles to flock together in interesting ways and trace organic shapes.</p>
+
+<p>Last summer I wrote a simple physarum simulation using compute shaders in OpenGL. Some of the results were pretty interesting, and I experimented with having particles of different colors that tried to separate from each other.</p>
+
+<p>I started to try and use Niagara, the new vfx system in Unreal Engine, and given its capabilities I thought it would be interesting to recreate a physarum simulation and possibly extend it to work in the THIRD DIMENSION.</p>
+
+<p>The setup to get things working in Niagara was a bit confusing since I had to use Simulation Stages, which is a powerful feature, but doesn’t always work as expected.</p>
+
+<p>This video helped me get started https://www.youtube.com/watch?v=XVKpofOj44c</p>
+
+<p>In order to simulate slime mold we need particles that move around according to our rules, and we need a grid that we can write data into to store the density of the particle trails.</p>
+
+<p>There are two modes to the simulation stages. A stage’s iteration source can be the particles or a data interface. If it is particles then the stage executes some code for each particle that currently exists. If it is a data interface and the interface is a grid then it executes some code for each cell in the grid.</p>
+
+<h1 id="volumetric-physarum">Volumetric Physarum</h1>
+<p>To make our simulation volumetric we need to swap out our 2D texture for a 3D one. This way our particles will move around in 3D space and leave a trail inside of a volume. This involves doing a few new things. First, rendering a volume as not as simple as rendering a 2D texture. There are multiple ways to render a volume, but I wrote a shader to raymarch and estimate the density to use that as the alpha.</p>
+
+<p>The other thing we need to do is redesign how our particles moved. Previously they just sampled to locations to the left, right, and in front, but we want to make use of this extra dimension so we need to sample more points. The simplest method I could think of is just to sample left, right, forward, up, and down, but using a diffrent sampling method could yield more interesting results. In 2D we just use a single angle to determine which direction the particle was facing, but now we’ll need method, either a quaternion or basis vectors. To keep things simple I just stored a forward vector and use that to calculate the up and right vectors when I needed to rotate the particles.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">light</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">float</span> <span class="n">brightness</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">LIGHT</span><span class="p">,</span> <span class="n">NORMAL</span><span class="p">);</span>
+    <span class="c1">// DIFFUSE_LIGHTING is the return value of this function</span>
+    <span class="n">DIFFUSE_LIGHTING</span> <span class="o">+=</span> <span class="n">vec3</span><span class="p">(</span><span class="n">brightness</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+  </div>
+</div>
+</body>
+</html>
