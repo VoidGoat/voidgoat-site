@@ -19,7 +19,7 @@ I recently had the idea of making traveling salesperson problem art in 3D. Typic
 
 The traveling salesperson problem is a mathematical optimization problem where you have a set of locations that a traveling salesperson needs to visit and you want to find the shortest route that includes all locations and returns the salesperson to their starting point.
 
-| ![TSP visual explanation]({{img}}tsp-explainer.png){: .table-img } | 
+| ![TSP visual explanation]({{img}}tsp-route-explainer.png){: .table-img } | 
 |:--:| 
 | *Randomly visiting points results in a very long route, but we can use a variety of algorithms to find more efficient routes.* |
 
